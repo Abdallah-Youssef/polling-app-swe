@@ -17,7 +17,7 @@ const VoteSchema = new Schema({
         type: Number,
         min: [0, 'choice is negative'],
         validate: {
-            validator: function (val){
+            validator: async function (val){
                 await this.populate('poll', 'choices');
                 return val < this.poll.choices.length;
             },
