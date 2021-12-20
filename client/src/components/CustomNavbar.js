@@ -1,6 +1,7 @@
-import { Navbar, Container, Button } from "react-bootstrap"
+import { Navbar, Container, Button, Nav } from "react-bootstrap"
 import { getLoggedInUser, logInUser, logOutUser } from "../util/user"
 import { useState } from "react"
+import { Link } from "react-router-dom"
 const CustomNavbar = () => {
     const [user, setUser] = useState(getLoggedInUser())
 
@@ -10,7 +11,7 @@ const CustomNavbar = () => {
     }
 
     const handleLogIn = () => {
-        const userTemp = {name : "hamada"}
+        const userTemp = { name: "hamada" }
         logInUser(userTemp)
         setUser(userTemp)
     }
@@ -18,15 +19,17 @@ const CustomNavbar = () => {
     return (
         <Navbar bg="dark" variant="dark">
             <Container>
-                <Navbar.Brand href="#home">Polling Website</Navbar.Brand>
+                <Navbar.Brand as={Link} to="/">Polling Website </Navbar.Brand>
 
-                <div>
                 {
                     user !== null ?
                         <>
-                            <Button className="mx-2"> My Polls </Button>
-                            <Button className="mx-2"> Create Poll </Button>
-                            <Button className="mx-2" onClick={handleLogOut}> Log out </Button>
+                            <Nav>
+                                <Nav.Link as={Link} to="/create" className="mx-2">Create Poll</Nav.Link>
+                                <Nav.Link as={Link} to="/mypolls" className="mx-2">My Polls</Nav.Link>
+                                <Button className="mx-2" onClick={handleLogOut}> Log out </Button>
+                            </Nav>
+
                         </>
 
                         :
@@ -34,7 +37,6 @@ const CustomNavbar = () => {
                             Login
                         </Button>
                 }
-                </div>
 
             </Container>
         </Navbar>
