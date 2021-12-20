@@ -15,12 +15,13 @@ const VoteSchema = new Schema({
     choice: {
         required: true,
         type: Number,
-        min: 0,
-        validate: function (val){
-            // this function should ensure that the index of the 
-            // choice is within bounds
-            // not sure if I should populate the poll here or
-            // in the "vote" route..
+        min: [0, 'choice is negative'],
+        validate: {
+            validator: function (val){
+                await this.populate('poll', 'choices');
+                return val < this.poll.choices.length;
+            },
+            message: "choice doesn't exit"
         }
     },
     public: {type: Boolean, default: true}
