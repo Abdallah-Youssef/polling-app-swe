@@ -18,7 +18,9 @@ const VoteSchema = new Schema({
         min: [0, 'choice is negative'],
         validate: {
             validator: async function (val){
-                await this.populate('poll', 'choices');
+                console.log(this);
+                await this.populate('poll');
+                console.log(this.poll);
                 return val < this.poll.choices.length;
             },
             message: "choice doesn't exit"

@@ -19,7 +19,15 @@ const PollSchema = new Schema({
         type: Boolean, 
         default: true
     },
-    choices: [String]
+    choices: {
+        type: [String],
+        validate: {
+            validator: function(val){
+                return val.length >= 2;
+            },
+            message: "Poll has less than 2 choices"
+        }
+    }
 });
 
 const Poll = mongoose.model('Poll', PollSchema);
