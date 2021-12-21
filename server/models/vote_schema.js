@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
+const Poll = require('./poll_schema')
 
 const VoteSchema = new Schema({
     user: {
@@ -18,10 +19,10 @@ const VoteSchema = new Schema({
         min: [0, 'choice is negative'],
         validate: {
             validator: async function (val){
-                console.log(this);
-                await this.populate('poll');
-                console.log(this.poll);
-                return val < this.poll.choices.length;
+                const poll = await Poll.findById(this.poll, 'choices')
+                // await this.populate('poll'); needs query or document, not model
+                //console.log(this.poll);
+                return val < poll.choices.length;
             },
             message: "choice doesn't exit"
         }

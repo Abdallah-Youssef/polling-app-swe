@@ -26,10 +26,10 @@ describe('stores an instance of everything', function(){
         });
 
         const poll = new Poll({
-            postedBy: user.id, //TODO test non-extant id
+            postedBy: user.id,
             createdOn: new Date(),
             question: "what are you?",
-            choices: ['human', 'alien'] //TODO test less than 2 choices
+            choices: ['human', 'alien']
         });
 
         await poll.save();
@@ -53,6 +53,54 @@ describe('stores an instance of everything', function(){
 
         await vote.save();
         assert(!vote.isNew);
+    });
+
+});
+
+describe('basic validation', function(){
+
+    it('rejects less than 2 choices', async function(){
+        const user = await User.findOne({
+            display_name: 'dummy_user'
+        });
+
+        const poll = new Poll({
+            postedBy: user.id,
+            createdOn: new Date(),
+            question: "are you sure?",
+            choices: ['no']
+        });
+
+        assert.rejects(poll.save(), {
+            namse: 'ValidationError'
+        });
+    });
+
+    it('rejects out of bounds choices', async function(){
+        const user = await User.findOne({
+            display_name: 'dummy_user'
+        });
+
+        const poll = await Poll.findOne({
+            question: "what are you?"
+        });
+
+        const vote = new Vote({
+            user: user.id,
+            poll: poll.id,
+            choice: 10
+        });
+        assert.rejects(vote.save(), {
+            name: 'ValidationError',
+            message: "choice doesn't exit"
+        });
+
+        const other_vote = new Vote({
+            user: user.id,
+            poll: poll.id,
+            choice: -1
+        });
+        assert.rejects(other_vote.save(), {name: 'ValidationError'});
     });
 
 });
