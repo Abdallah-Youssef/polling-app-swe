@@ -1,3 +1,6 @@
+import React from "react";
+import { logIn, createAccount } from "../api/user";
+
 export const CLEAR_USER = "CLEAR_USER";
 export const SET_USER = "SET_USER";
 
@@ -15,29 +18,23 @@ export const handleLogOut = () => {
   };
 };
 
-export const handleLogIn = async (email, password) => {
-  return (dispatch) => {
-    const res = await logIn(email, password);
+export const handleLogIn = (email, password) => async (dispatch) => {
+  const res = await logIn(email, password);
 
-    if (res) {
-      console.log(setUser(res.user.id, email, password));
+  if (res) {
 
-      dispatch(setUser(res.user.id, email, password));
-      localStorage.setItem("token", res.token);
-    }
-  };
+    dispatch(setUser(res.user.id, email, password));
+    localStorage.setItem("token", res.token);
+  }
 };
 
-export const handleSignUp = async (email, password) => {
-  return (dispatch) => {
-    const res = await createAccount(email, password);
+export const handleSignUp = (email, password) => async (dispatch) => {
+  const res = await createAccount(email, password);
 
-    if (res) {
-      dispatch(setUser(res.user.id, email, password));
-      console.log(user);
-      localStorage.setItem("token", res.token);
-    }
-  };
+  if (res) {
+    dispatch(setUser(res.user.id, email, password));
+    localStorage.setItem("token", res.token);
+  }
 };
 
 export const userReducer = (user, action) => {
@@ -54,7 +51,3 @@ export const userReducer = (user, action) => {
 };
 
 export const UserContext = React.createContext();
-
-
-
-

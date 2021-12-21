@@ -1,4 +1,3 @@
-import "./App.css";
 import CreatePoll from "./components/CreatePoll";
 import CustomNavbar from "./components/CustomNavbar";
 import { Routes, Route } from "react-router-dom";
@@ -7,12 +6,13 @@ import RequireAuth from "./components/RequireAuth";
 import Login from "./components/Login";
 import SignUp from "./components/SignUp";
 import { userReducer, UserContext } from "./reducers/user";
+import { useReducer } from "react";
 function App() {
-  const [state, dispatch] = useReducer(userReducer, {});
+  const [user, dispatch] = useReducer(userReducer, {});
 
   return (
     <div className="App">
-      <UserContext.Provider value={(state, dispatch)}>
+      <UserContext.Provider value={{user, dispatch}}>
         <CustomNavbar />
 
         <Routes>
@@ -27,6 +27,7 @@ function App() {
           <Route path="/" element={<h1>Home Page</h1>} />
         </Routes>
       </UserContext.Provider>
+
     </div>
   );
 }

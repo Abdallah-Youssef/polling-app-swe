@@ -1,17 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Form, Button, Container } from 'react-bootstrap'
-import useAuthenticatedUser from '../reducers/user'
+import { handleSignUp, UserContext } from '../reducers/user'
 const SignUp = () => {
+    const {dispatch} = useContext(UserContext)
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-    const {handleSignUp} = useAuthenticatedUser()
 
     const handleEmailChanged = (e) => setEmail(e.target.value)
     const handlePasswordChanged = (e) => setPassword(e.target.value)
 
     const handleSubmitClicked = (e) => {
         e.preventDefault()
-        handleSignUp(email, password)
+        handleSignUp(email, password)(dispatch)
     }
 
     return (

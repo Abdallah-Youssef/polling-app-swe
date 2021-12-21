@@ -1,20 +1,21 @@
 import { Link } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Form, Button, Container } from "react-bootstrap";
-import useAuthenticatedUser from "../reducers/user";
+import { handleLogIn, UserContext } from "../reducers/user";
 
 const Login = () => {
+  const {  user, dispatch } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { handleLogIn } = useAuthenticatedUser();
 
   const handleEmailChanged = (e) => setEmail(e.target.value);
   const handlePasswordChanged = (e) => setPassword(e.target.value);
 
   const handleLoginClicked = (e) => {
     e.preventDefault();
-    debugger
-    handleLogIn(email, password);
+    debugger;
+    handleLogIn(email, password)(dispatch);
+    console.log(user);
   };
 
   return (
@@ -47,7 +48,6 @@ const Login = () => {
           <br />
 
           <Link to="/signup">Create Account</Link>
-
         </Form>
       </Container>
     </div>
