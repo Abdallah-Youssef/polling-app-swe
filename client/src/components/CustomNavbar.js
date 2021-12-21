@@ -1,9 +1,10 @@
 import { Navbar, Container, Button, Nav } from "react-bootstrap"
 import { getLoggedInUser, logInUser, logOutUser } from "../util/user"
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 const CustomNavbar = () => {
     const [user, setUser] = useState(getLoggedInUser())
+    const navigate = useNavigate()
 
     const handleLogOut = () => {
         logOutUser()
@@ -11,9 +12,7 @@ const CustomNavbar = () => {
     }
 
     const handleLogIn = () => {
-        const userTemp = { name: "hamada" }
-        logInUser(userTemp)
-        setUser(userTemp)
+        navigate('/login')
     }
 
     return (
