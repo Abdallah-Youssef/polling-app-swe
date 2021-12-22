@@ -62,7 +62,7 @@ app.use('/vote', passport.authenticate('jwt', {session: false}), voteRouter);
 app.get('/', async (req, res)=>{
     const polls = await Poll.find({public: true})
     .populate('postedBy', 'display_name')
-    .execPopulate();
+    .exec();
     console.log(polls);
     res.status(200).json({polls: polls});
 });

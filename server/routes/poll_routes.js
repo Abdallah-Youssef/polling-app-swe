@@ -4,17 +4,29 @@ const Poll = require('../models/poll_schema');
 const Vote = require('../models/vote_schema');
 const poll_helpers = require('../helpers/poll_helpers');
 
+
+/**
+ * Request Format
+ * {
+ *     question: string
+ *     public: boolean
+ *     choices: string[]
+ * }
+ */
 pollRouter.post('/createPoll', async (req, res)=>{
     try
     {
-        const postData = {
+        const pollData = {
             postedBy: req.user.id,
-            createdAt: new Date().getTime(),
-            text: req.body.text
+            createdOn: new Date().getTime(),
+            question: req.body.question,
+            public: req.body.boolean,
+            choices: req.body.choices
         };
+
         if(req.body.photoURL)
-            postData.photoURL = req.body.photoURL;
-        const newPost = new Post(postData);
+            pollData.photoURL = req.body.photoURL;
+        const newPost = new Poll(pollData);
         await newPost.save();
         return res.json({status: 'success'});
     }catch(error)
