@@ -95,4 +95,4 @@ pollRouter.get('/getUserPolls', async (req, res) => {
     }
 });
 
-module.exports = postRouter;
+module.exports = pollRouter;

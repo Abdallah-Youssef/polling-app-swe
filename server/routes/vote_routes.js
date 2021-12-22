@@ -1,7 +1,7 @@
 const express = require('express');
 const Vote = require('../models/vote_schema');
 const voteRouter = express.Router();
-const helper = requre('../helpers/vote_helpers.js')
+const helper = require('../helpers/vote_helpers.js')
 
 /**
  * A user can submit a vote only once and cannot change it.
@@ -31,4 +31,4 @@ voteRouter.post('/submit', async (req, res)=>{
 });
 
 
-module.exports = followRouter;
+module.exports = voteRouter;
