@@ -1,30 +1,36 @@
-import './App.css';
-import CreatePoll from './components/CreatePoll';
-import CustomNavbar from './components/CustomNavbar';
-import { Routes, Route } from 'react-router-dom'
-import MyPolls from './components/MyPolls';
-import RequireAuth from './components/RequireAuth';
-import Login from './components/Login';
+import CreatePoll from "./components/CreatePoll";
+import CustomNavbar from "./components/CustomNavbar";
+import { Routes, Route } from "react-router-dom";
+import MyPolls from "./components/MyPolls";
+import RequireAuth from "./components/RequireAuth";
+import Login from "./components/Login";
+import SignUp from "./components/SignUp";
+import { userReducer, UserContext } from "./reducers/user";
+import { useReducer } from "react";
+import PollList from "./components/PollList";
 function App() {
-    return (
-        <div className="App">
-            <CustomNavbar />
+  const [user, dispatch] = useReducer(userReducer, {});
 
+  return (
+    <div className="App">
+      <UserContext.Provider value={{user, dispatch}}>
+        <CustomNavbar />
 
+        <Routes>
+          <Route element={<RequireAuth />}>
+            <Route exact path="/create" element={<CreatePoll />} />
+            <Route exact path="/mypolls" element={<MyPolls />} />
+          </Route>
 
-            <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUp />} />
 
-                <Route element={<RequireAuth />}>
-                    <Route exact path='/create' element={<CreatePoll/>} />
-                    <Route exact path='/mypolls' element={<MyPolls/>} />
-                </Route>
+          <Route path="/" element={<PollList/>} />
+        </Routes>
+      </UserContext.Provider>
 
-                <Route path='/login' element={<Login/>}/>
-
-                <Route path='/' element={<h1>Home Page</h1>}/>
-            </Routes>
-        </div>
-    );
+    </div>
+  );
 }
 
 export default App;

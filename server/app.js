@@ -1,43 +1,57 @@
-const express = require('express');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-const authRouter = require('./routes/auth_routes');
-const userRouter = require('./routes/users_routes');
-const postRouter = require('./routes/polls_routes');
-const voteRouter = require('./routes/vote_routes');
-const mongoose = require('mongoose');
-const passport = require('passport');
+const express = require("express");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
+const authRouter = require("./routes/auth_routes");
+const userRouter = require("./routes/users_routes");
+const pollRouter = require("./routes/polls_routes");
+const voteRouter = require("./routes/vote_routes");
+const passport = require("passport");
+const mongoose = require("mongoose");
 const Poll = require('./models/poll_schema');
 
-mongoose.connect('mongodb+srv://ahmed:meow@cluster0.zz2aw.mongodb.net/MeowAPP?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true}, err=>{
-    if(err) {
-        console.error(err);
-        throw new Error("Error Connecting to Database");
+mongoose.connect(
+  "mongodb+srv://adel:shakal@polling-app-cluster.pwaav.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
+  (err) => {
+    if (err) {
+      console.error(err);
+      throw new Error("Error Connecting to Database");
     }
-    console.log('Connected to DB');
-})
+    console.log("Connected to DB");
+  }
+);
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
 //app.use(bodyParser.urlencoded({extended: false}));
 
-app.use(cors({
+app.use(
+  cors({
     origin: true,
-    credentials: true
-}));
-
+    credentials: true,
+  })
+);
 
 const DEBUG_FUNC = (req, res, next) => {
-    console.log(req.headers);
-    next();
-}
+  console.log(req.headers);
+  next();
+};
 
-app.use('/userAuth', authRouter);
+app.use("/userAuth", authRouter);
 
-app.use('/user', passport.authenticate('jwt', {session: false}), userRouter);
+app.use("/user", passport.authenticate("jwt", { session: false }), userRouter);
 
-app.use('/post', DEBUG_FUNC, passport.authenticate('jwt', {session: false}), postRouter);
+app.use(
+  "/poll",
+  DEBUG_FUNC,
+  passport.authenticate("jwt", { session: false }),
+  pollRouter
+);
+
 
 app.use('/vote', passport.authenticate('jwt', {session: false}), voteRouter);
 
@@ -63,6 +77,6 @@ app.get('/shared_poll/:pollId', async (req, res) =>{
     res.send(poll);
 });
 
-app.listen(5000, ()=>{
-    console.log('Hemlo to meow app!');
-})
+app.listen(5000, () => {
+  console.log("Hemlo to meow app!");
+});
