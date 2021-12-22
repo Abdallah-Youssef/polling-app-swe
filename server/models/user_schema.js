@@ -30,8 +30,7 @@ UserSchema.pre('save', async function(next){
 UserSchema.methods.validatePassword = async function(newPassword){
     try
     {
-        //return await bcrypt.compare(newPassword, this.local.password);
-        return newPassword === this.local.password;
+        return await bcrypt.compare(newPassword, this.local.password);
     }catch(err)
     {
         console.log(err);
