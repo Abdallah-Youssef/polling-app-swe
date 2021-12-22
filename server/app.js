@@ -61,12 +61,15 @@ app.use('/vote', passport.authenticate('jwt', {session: false}), voteRouter);
  */
 app.get('/', async (req, res)=>{
     const polls = await Poll.find({public: true})
+    .populate('postedBy',
+     {_id:0, display_name: 1});
     console.log(polls);
     res.status(200).json({polls: polls});
 });
 
 app.get('/polls/:pollId', async (req, res) => { 
   const poll = await Poll.findById(req.params.pollId)
+  await poll.populate('postedBy', {_id: 0, display_name: 1}).execPopulate();
   res.send(poll);
 })
 
@@ -74,7 +77,8 @@ app.get('/polls/:pollId', async (req, res) => {
  * The sharing ID
  */
 app.get('/shared_poll/:pollId', async (req, res) =>{
-    const poll = await Poll.findById(req.params.pollId)
+    const poll = await Poll.findById(req.params.pollId);
+    await poll.populate('postedBy', {_id: 0, display_name: 1}).execPopulate();
     res.send(poll);
 });
 
