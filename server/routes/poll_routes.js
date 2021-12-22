@@ -49,9 +49,9 @@ pollRouter.delete('/deletePost', async (req, res) => {
 async function isAuthorized(req, res, next){
     const poll = await Poll.findById(req.body.id);
     const votes = await Vote.find({poll: poll.id});
-    const voters = votes.map(v => v.user);
-    if (req.user.id === poll.postedBy 
-        || voters.includes(req.user.id)){
+    const voters = votes.map(v => v.user.toString());
+    if (req.user.id == poll.postedBy.toString() 
+        || voters.includes(req.user.id.toString())){
 
             req.votes = votes;
             next();

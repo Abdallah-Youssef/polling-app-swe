@@ -110,9 +110,10 @@ describe('basic validation', function(){
 describe('handles votes correctly', function(){
 
     let poll;
+    let second_user;
 
     it('rejects duplicate votes', async function(){
-        const second_user = new User({
+        second_user = new User({
             display_name: 'yummy_user', 
             login_method: 'local',
             local: {
@@ -175,5 +176,26 @@ describe('handles votes correctly', function(){
 
         assert.deepStrictEqual(results, expected);
     });
+
+    it('excludes non-voters correctly', async function(){
+        let fourth_user  = new User({
+            display_name: 'nummy_user', 
+            login_method: 'local',
+            local: {
+                email: 'lsjf@abc.abc',
+                password: 'hi;k'
+            }
+        });
+        await fourth_user.save();
+
+        const votes = await Vote.find({poll: poll.id});
+        const voters = votes.map(v => v.user.toString());
+
+        console.log(voters);
+        console.log(second_user.id);
+
+        assert(!voters.includes(fourth_user.id.toString()));
+        assert(voters.includes(second_user.id.toString()));
+    })
 
 });
