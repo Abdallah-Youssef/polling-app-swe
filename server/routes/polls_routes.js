@@ -79,4 +79,20 @@ pollRouter.get('/getPollResults', isAuthorized, async (req, res) => {
 });
 
 
+/**
+ * We need this path for private (and public) posts
+ */
+pollRouter.get('/getUserPolls', async (req, res) => {
+    try
+    {
+        const polls = await Poll.find({postedBy: req.body.id});
+        console.log(polls);
+        return res.json({status: 'success', polls: polls});
+    }catch(error)
+    {
+        console.log('Error in delete post: ' + error);
+        return res.json({status: 'error'});
+    }
+});
+
 module.exports = postRouter;

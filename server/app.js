@@ -7,6 +7,8 @@ const postRouter = require('./routes/polls_routes');
 const voteRouter = require('./routes/vote_routes');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const Poll = require('./models/poll_schema');
+
 mongoose.connect('mongodb+srv://ahmed:meow@cluster0.zz2aw.mongodb.net/MeowAPP?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true}, err=>{
     if(err) {
         console.error(err);
@@ -39,9 +41,26 @@ app.use('/post', DEBUG_FUNC, passport.authenticate('jwt', {session: false}), pos
 
 app.use('/vote', passport.authenticate('jwt', {session: false}), voteRouter);
 
-app.get('/', (req, res)=>{
-    console.log('GDGDF');
-    res.status(200).json({hello: 'world'});
+/**
+ * Home page, all polls, no need for authentication
+ * Not scalable, of course.. is it?
+ */
+app.get('/', async (req, res)=>{
+    const polls = await Poll.find({public: true})
+    .populate('postedBy', 'display_name')
+    .execPopulate();
+    console.log(polls);
+    res.status(200).json({polls: polls});
+});
+
+/**
+ * The sharing ID
+ */
+app.get('/shared_poll/:pollId', async (req, res) =>{
+    const poll = await Poll.findById(req.params.pollId)
+    .populate('postedBy', 'display_name')
+    .execPopulate();
+    res.send(poll);
 });
 
 app.listen(5000, ()=>{

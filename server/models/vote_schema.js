@@ -19,10 +19,10 @@ const VoteSchema = new Schema({
         min: [0, 'choice is negative'],
         validate: {
             validator: async function (val){
-                const poll = await Poll.findById(this.poll, 'choices')
-                // await this.populate('poll'); needs query or document, not model
+                //const poll = await Poll.findById(this.poll, 'choices')
+                await this.populate('poll', 'choices').execPopulate();
                 // console.log(poll);
-                return val < poll.choices.length;
+                return val < this.poll.choices.length;
             },
             message: "choice doesn't exit"
         }
