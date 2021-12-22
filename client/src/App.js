@@ -7,6 +7,7 @@ import Login from "./components/Login";
 import SignUp from "./components/SignUp";
 import { userReducer, UserContext } from "./reducers/user";
 import { useReducer } from "react";
+import PollList from "./components/PollList";
 function App() {
   const [user, dispatch] = useReducer(userReducer, {});
 
@@ -24,7 +25,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
 
-          <Route path="/" element={<h1>Home Page</h1>} />
+          <Route path="/" element={<PollList/>} />
         </Routes>
       </UserContext.Provider>
 

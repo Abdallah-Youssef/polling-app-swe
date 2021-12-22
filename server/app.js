@@ -3,7 +3,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const authRouter = require("./routes/auth_routes");
 const userRouter = require("./routes/users_routes");
-// const postRouter = require("./routes/posts_routes");
+const pollRouter = require("./routes/poll_routes");
 const followRouter = require("./routes/follows_routes");
 const passport = require("passport");
 const mongoose = require("mongoose")
@@ -44,12 +44,12 @@ app.use("/userAuth", authRouter);
 
 app.use("/user", passport.authenticate("jwt", { session: false }), userRouter);
 
-// app.use(
-//   "/post",
-//   DEBUG_FUNC,
-//   passport.authenticate("jwt", { session: false }),
-//   postRouter
-// );
+app.use(
+  "/poll",
+  DEBUG_FUNC,
+  passport.authenticate("jwt", { session: false }),
+  pollRouter
+);
 
 app.use(
   "/follow",

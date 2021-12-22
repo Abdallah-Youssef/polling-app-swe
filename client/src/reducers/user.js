@@ -22,10 +22,11 @@ export const handleLogIn = (email, password) => async (dispatch) => {
   const res = await logIn(email, password);
 
   if (res) {
-
     dispatch(setUser(res.user.id, email, password));
     localStorage.setItem("token", res.token);
   }
+
+  else throw new Error('Login failed')
 };
 
 export const handleSignUp = (email, password) => async (dispatch) => {

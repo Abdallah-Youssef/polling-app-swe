@@ -2,19 +2,26 @@ import { Link } from "react-router-dom";
 import React, { useState, useContext } from "react";
 import { Form, Button, Container } from "react-bootstrap";
 import { handleLogIn, UserContext } from "../reducers/user";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const {  user, dispatch } = useContext(UserContext);
+  const navigate = useNavigate();
+  const { user, dispatch } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleEmailChanged = (e) => setEmail(e.target.value);
   const handlePasswordChanged = (e) => setPassword(e.target.value);
 
-  const handleLoginClicked = (e) => {
+  const handleLoginClicked = async (e) => {
     e.preventDefault();
-    debugger;
-    handleLogIn(email, password)(dispatch);
+    try {
+      await handleLogIn(email, password)(dispatch);
+      navigate('/')
+    } catch {
+      alert("Login failed");
+    }
+
     console.log(user);
   };
 
