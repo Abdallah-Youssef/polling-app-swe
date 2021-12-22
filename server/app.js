@@ -3,8 +3,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const authRouter = require('./routes/auth_routes');
 const userRouter = require('./routes/users_routes');
-const postRouter = require('./routes/posts_routes');
-const followRouter = require('./routes/follows_routes');
+const postRouter = require('./routes/polls_routes');
+const voteRouter = require('./routes/vote_routes');
 const mongoose = require('mongoose');
 const passport = require('passport');
 mongoose.connect('mongodb+srv://ahmed:meow@cluster0.zz2aw.mongodb.net/MeowAPP?retryWrites=true&w=majority', {useNewUrlParser: true, useUnifiedTopology: true}, err=>{
@@ -37,7 +37,7 @@ app.use('/user', passport.authenticate('jwt', {session: false}), userRouter);
 
 app.use('/post', DEBUG_FUNC, passport.authenticate('jwt', {session: false}), postRouter);
 
-app.use('/follow', passport.authenticate('jwt', {session: false}), followRouter);
+app.use('/vote', passport.authenticate('jwt', {session: false}), voteRouter);
 
 app.get('/', (req, res)=>{
     console.log('GDGDF');

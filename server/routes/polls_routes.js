@@ -1,9 +1,10 @@
 const express = require('express');
-const postRouter = express.Router();
-const Post = require('../models/post_schema');
-const Comment = require('../models/comment_schema');
+const pollRouter = express.Router();
+const Poll = require('../models/poll_schema');
+const Vote = require('../models/vote_schema');
+const poll_helpers = require('../helpers/poll_helpers');
 
-postRouter.post('/sendPost', async (req, res)=>{
+pollRouter.post('/createPoll', async (req, res)=>{
     try
     {
         const postData = {
@@ -23,7 +24,8 @@ postRouter.post('/sendPost', async (req, res)=>{
     }
 });
 
-postRouter.delete('/deletePost', async (req, res) => {
+/* Should we allow creators to delete their polls to begin with?
+pollRouter.delete('/deletePost', async (req, res) => {
     try
     {
         const postToBeDeleted = await Post.findById(req.body.id);
@@ -41,15 +43,34 @@ postRouter.delete('/deletePost', async (req, res) => {
         return res.json({status: 'error'});
     }
 });
+*/
 
 
+async function isAuthorized(req, res, next){
+    const poll = await Poll.findById(req.body.id);
+    const votes = await Vote.find({poll: poll.id});
+    const voters = votes.map(v => v.user);
+    if (req.user.id === poll.postedBy 
+        || voters.includes(req.user.id)){
 
-postRouter.get('/getUserPosts', async (req, res) => {
+            req.votes = votes;
+            next();
+    }
+    else{
+        return res.status('401').send();
+    }
+}
+
+/** Checks if the user has voted or has created the poll
+ * needs the poll id in the body
+ * then returns an array {{choice, voter name (if the vote is public)}}
+ */
+pollRouter.get('/getPollResults', isAuthorized, async (req, res) => {
     try
     {
-        const posts = await Post.find({postedBy: req.body.id});
-        console.log(posts);
-        return res.json({status: 'success', posts: posts});
+        const results = await poll_helpers.getResults(req.votes);
+        console.log(results);
+        return res.json({status: 'success', results: results});
     }catch(error)
     {
         console.log('Error in delete post: ' + error);
