@@ -4,9 +4,10 @@ const cookieParser = require("cookie-parser");
 const authRouter = require("./routes/auth_routes");
 const userRouter = require("./routes/users_routes");
 const pollRouter = require("./routes/poll_routes");
-const followRouter = require("./routes/follows_routes");
+const voteRouter = require("./routes/vote_routes");
 const passport = require("passport");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
+const Poll = require('./models/poll_schema');
 
 mongoose.connect(
   "mongodb+srv://adel:shakal@polling-app-cluster.pwaav.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
@@ -51,15 +52,29 @@ app.use(
   pollRouter
 );
 
-app.use(
-  "/follow",
-  passport.authenticate("jwt", { session: false }),
-  followRouter
-);
 
-app.get("/", (req, res) => {
-  console.log("GDGDF");
-  res.status(200).json({ hello: "world" });
+app.use('/vote', passport.authenticate('jwt', {session: false}), voteRouter);
+
+/**
+ * Home page, all polls, no need for authentication
+ * Not scalable, of course.. is it?
+ */
+app.get('/', async (req, res)=>{
+    const polls = await Poll.find({public: true})
+    .populate('postedBy', 'display_name')
+    .execPopulate();
+    console.log(polls);
+    res.status(200).json({polls: polls});
+});
+
+/**
+ * The sharing ID
+ */
+app.get('/shared_poll/:pollId', async (req, res) =>{
+    const poll = await Poll.findById(req.params.pollId)
+    .populate('postedBy', 'display_name')
+    .execPopulate();
+    res.send(poll);
 });
 
 app.listen(5000, () => {
