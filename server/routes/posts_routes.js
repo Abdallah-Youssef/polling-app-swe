@@ -1,4 +1,4 @@
-const express = require('express');
+/* const express = require('express');
 const postRouter = express.Router();
 const Post = require('../models/post_schema');
 const Comment = require('../models/comment_schema');
@@ -58,4 +58,4 @@ postRouter.get('/getUserPosts', async (req, res) => {
 });
 
 
-module.exports = postRouter;
+module.exports = postRouter; */
