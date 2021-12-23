@@ -12,6 +12,13 @@ export const getAllPolls = () => {
         .catch(() => alert("Failed to reach the server, Please try again later"));
 };
 
+/**
+ * 
+ * @param {*} title 
+ * @param {*} Private 
+ * @param {*} options 
+ * @returns on success id of the created poll
+ */
 export const createPoll = (title, Private, options) => {
 
     var myHeaders = new Headers();
@@ -31,7 +38,7 @@ export const createPoll = (title, Private, options) => {
     };
 
     return fetch(apiURL + "/poll/createPoll", requestOptions)
-        .then(response => response.text())
-        .then(result => console.log(result))
+        .then(response => response.json())
+        .then(result => result.id)
         .catch(error => console.log('error', error));
 }
