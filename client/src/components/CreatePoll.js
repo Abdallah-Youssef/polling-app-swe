@@ -1,9 +1,8 @@
-import React, { useState } from 'react'
-import { CloseButton, Form, Row, Col, Container, Button, FormGroup } from "react-bootstrap"
+import React, { useState, useEffect } from 'react'
+import { CloseButton, Form, Row, Col, Container, Button, FormGroup, FormControl } from "react-bootstrap"
 import { useNavigate } from 'react-router-dom'
 import { createPoll } from '../api/poll'
 
-let optionCount = 1
 const CreatePoll = () => {
     const navigate = useNavigate()
     const [options, setOptions] = useState([])
@@ -12,27 +11,15 @@ const CreatePoll = () => {
     const handleTitleChange = (event) => {
         setTitle(event.target.value)
     }
-    const handleOptionChange = (event) => {
-        console.log(options);
-        let optionId = event.target.id
-        let index
-        for (let i = 0; i < options.length; i++) {
-            if (options[i] === optionId) {
-                index = i
-                break
-            }
-        }
-        options.splice(index, 1, event.target.value)
-        setOptions([...options])
+    const handleOptionChange = (event, index) => {
+        setOptions(options.map((option, i) => i === index ? event.target.value : option))
     }
     const handleAddOptionClick = () => {
-        setOptions([...options, "New Option" + optionCount])
-        optionCount++
+        setOptions([...options, ""])
     }
-    const handleDeleteOptionClick = (event) => {
-        let option = event.target.getAttribute("name")
-        document.getElementById(option).value = ""
-        setOptions(options.filter(item => item !== option))
+    const handleDeleteOptionClick = (index) => {
+        options.splice(index, 1)
+        setOptions([...options])
     }
     const handlePrivateCheckBoxChange = (event) => {
         setPrivate(event.target.checked)
@@ -40,10 +27,28 @@ const CreatePoll = () => {
 
     const handleCreateClicked = async (event) => {
         event.preventDefault()
-        optionCount = 1
         await createPoll(title, Private, options)
         navigate('/')
     }
+
+
+    const [validData, setValidData] = useState(false)
+    useEffect(() => {
+        setValidData(checkValidData())
+    }, [title, options])
+
+    const checkValidData = () => {
+        if (title === "" || options.length < 2)
+            return false;
+
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].trim() === "") 
+                return false
+        }
+
+        return true;
+    }
+
     return (
         <>
             <h1 className="display-5 w-100 text-center my-4">Create Poll</h1>
@@ -54,7 +59,17 @@ const CreatePoll = () => {
 
                     <Form.Group className="mb-3">
                         <Form.Label>Title</Form.Label>
-                        <Form.Control onChange={handleTitleChange} type="text" placeholder="My Poll" />
+                        <Form.Control
+                            onChange={handleTitleChange}
+                            type="text"
+                            placeholder="My Poll"
+                            isInvalid={title === ""}
+                        />
+                        <FormControl.Feedback type='invalid'>
+                            <ul>
+                                <li>Enter poll title</li>
+                            </ul>
+                        </FormControl.Feedback>
                     </Form.Group>
 
 
@@ -70,17 +85,27 @@ const CreatePoll = () => {
 
                     <hr></hr>
 
-                    <Form.Group className="mb-3"  >
+                    <Form.Group className="mb-3">
                         <Form.Label className='mx-3'><h4>Options</h4></Form.Label>
 
                         {
                             options.map((option, i) =>
                                 <Row className='my-3' key={i}>
                                     <Col>
-                                        <Form.Control type="text" onChange={handleOptionChange} id={option} placeholder={option} />
+                                        <Form.Control type="text"
+                                            value={options[i]}
+                                            onChange={(e) => handleOptionChange(e, i)}
+                                            placeholder={"Option " + (i + 1)}
+                                            isInvalid={options[i].trim() === ""}
+                                        />
+                                        <FormControl.Feedback type='invalid'>
+                                            <ul>
+                                                <li>Option cannot be empty</li>
+                                            </ul>
+                                        </FormControl.Feedback>
                                     </Col>
                                     <Col sm={1}>
-                                        <CloseButton name={option} onClick={handleDeleteOptionClick} aria-label="Hide" id={'close ' + option} />
+                                        <CloseButton name={option} onClick={() => handleDeleteOptionClick(i)} aria-label="Hide" />
                                     </Col>
                                 </Row>
 
@@ -90,9 +115,17 @@ const CreatePoll = () => {
                             Add Option
                         </Button>
 
+                        {
+                            options.length < 2 ?
+                                <ul>
+                                    <li style={{ color: "red" }}>Must have at least two options</li>
+                                </ul>
+                                : <></>
+                        }
+
                     </Form.Group>
 
-                    <Button variant="primary" type="submit" onClick={handleCreateClicked}>
+                    <Button variant="primary" type="submit" onClick={handleCreateClicked} disabled={!validData}>
                         Create
                     </Button>
                     <Row>
