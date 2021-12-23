@@ -38,7 +38,7 @@ const CreatePoll = () => {
     }, [title, options])
 
     const checkValidData = () => {
-        if (title === "" || options.length < 2)
+        if (title.trim() === "" || options.length < 2)
             return false;
 
         for (let i = 0; i < options.length; i++) {
@@ -63,7 +63,7 @@ const CreatePoll = () => {
                             onChange={handleTitleChange}
                             type="text"
                             placeholder="My Poll"
-                            isInvalid={title === ""}
+                            isInvalid={title.trim() === ""}
                         />
                         <FormControl.Feedback type='invalid'>
                             <ul>
