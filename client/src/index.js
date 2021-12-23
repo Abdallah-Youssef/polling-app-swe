@@ -24,7 +24,7 @@ fetchIntercept.register({
 
     if (!config.headers) {
       config.headers = myHeaders;
-      console.log([url, { headers: myHeaders }]);
+      console.log([url, config]);
       return [url, config];
     }
 
