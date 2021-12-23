@@ -38,7 +38,7 @@ describe("CreatePoll", () => {
         const emptyOptionWarning = await screen.getAllByText("Option cannot be empty")
         expect(emptyOptionWarning.length).toEqual(2)
 
-        screen.debug()
+
         const option1 = screen.getByPlaceholderText("Option 1")
         const option2 = screen.getByPlaceholderText("Option 2")
 
