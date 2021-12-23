@@ -9,5 +9,5 @@ export const getAllPolls = () => {
   return fetch(apiURL, requestOptions)
     .then((response) => response.json())
     .then(res => res.polls)
-    .catch((error) => console.log("error", error));
+    .catch(() => alert("Failed to reach the server, Please try again later"));
 };

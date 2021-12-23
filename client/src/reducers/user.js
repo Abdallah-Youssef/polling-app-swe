@@ -7,48 +7,56 @@ export const SET_USER = "SET_USER";
 const clearUser = () => ({ type: CLEAR_USER });
 
 const setUser = (id, email, password) => ({
-  type: SET_USER,
-  user: { id, email, password },
+    type: SET_USER,
+    user: { id, email, password },
 });
 
 export const handleLogOut = () => {
-  return (dispatch) => {
-    dispatch(clearUser());
-    localStorage.removeItem("token");
-  };
+    return (dispatch) => {
+        dispatch(clearUser());
+        localStorage.removeItem("token");
+    };
 };
 
 export const handleLogIn = (email, password) => async (dispatch) => {
-  const res = await logIn(email, password);
+    const res = await logIn(email, password);
 
-  if (res) {
-    dispatch(setUser(res.user.id, email, password));
-    localStorage.setItem("token", res.token);
-  }
+    if (res) {
+        if (res.error) 
+            throw new Error(res.error)
+    
+        dispatch(setUser(res.user.id, email, password));
+        localStorage.setItem("token", res.token);
+    }
 
-  else throw new Error('Login failed')
+    else throw new Error('Login failed')
 };
 
 export const handleSignUp = (email, password) => async (dispatch) => {
-  const res = await createAccount(email, password);
+    const res = await createAccount(email, password);
+ 
 
-  if (res) {
-    dispatch(setUser(res.user.id, email, password));
-    localStorage.setItem("token", res.token);
-  }
+    if (res) {
+        if (res.error) 
+            throw new Error(res.error)
+        dispatch(setUser(res.user.id, email, password));
+        localStorage.setItem("token", res.token);
+    }
+
+    else throw new Error('Sign Up Failed')
 };
 
 export const userReducer = (user, action) => {
-  switch (action.type) {
-    case CLEAR_USER:
-      return {};
+    switch (action.type) {
+        case CLEAR_USER:
+            return {};
 
-    case SET_USER:
-      return action.user;
+        case SET_USER:
+            return action.user;
 
-    default:
-      return {};
-  }
+        default:
+            return {};
+    }
 };
 
 export const UserContext = React.createContext();
