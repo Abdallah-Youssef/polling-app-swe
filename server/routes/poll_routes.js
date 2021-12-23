@@ -20,7 +20,7 @@ pollRouter.post('/createPoll', async (req, res)=>{
             postedBy: req.user.id,
             createdOn: new Date().getTime(),
             question: req.body.question,
-            public: req.body.boolean,
+            public: req.body.public,
             choices: req.body.choices
         };
 
