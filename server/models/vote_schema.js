@@ -19,16 +19,20 @@ const VoteSchema = new Schema({
         min: [0, 'choice is negative'],
         validate: {
             validator: async function (val){
-                const poll = await Poll.findById(this.poll, 'choices')
-                // await this.populate('poll'); needs query or document, not model
-                //console.log(this.poll);
-                return val < poll.choices.length;
+                //const poll = await Poll.findById(this.poll, 'choices')
+                await this.populate('poll', 'choices').execPopulate();
+                // console.log(poll);
+                return val < this.poll.choices.length;
             },
             message: "choice doesn't exit"
         }
     },
     public: {type: Boolean, default: true}
 });
+
+/*VoteSchema.pre('save', function(){
+    console.log(`saving vote ${this}..`)
+});*/
 
 const Vote = mongoose.model('Vote', VoteSchema);
 

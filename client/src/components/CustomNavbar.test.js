@@ -1,9 +1,8 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { logInUser } from '../util/user';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import CustomNavbar from './CustomNavbar';
-
-const renderWithRouter = (component) => render(<BrowserRouter>{component}</BrowserRouter>)
+import {Enviroment, mockUserDispatch, mockUserState} from '../setupTests'
+import { useContext } from 'react';
+import { setUser, UserContext } from '../reducers/user';
 
 describe("CustomNavbar", () => {
     beforeEach(() => {
@@ -16,31 +15,33 @@ describe("CustomNavbar", () => {
 
 
     test('renders login button when not logged in', () => {
-        renderWithRouter(<CustomNavbar />);
+        render(<Enviroment element={<CustomNavbar/>} />);
         expect(screen.getByRole("button", {name : "Login"})).toBeInTheDocument()
     });
 
     test('renders logout button when logged in', () => {
-        logInUser({name: "keff"})
-
-        renderWithRouter(<CustomNavbar />);
+        mockUserDispatch(setUser("123", "adel@shakal.com", "Password@1"))
+        render(<Enviroment element={<CustomNavbar/>} />);
 
         const logOutButton = screen.getByRole("button", {name : "Log out"})
         expect(logOutButton).toBeInTheDocument()
+
     });
 
-    test('logs out when log out is clicked', () => {
-        logInUser({name: "keff"})
+    test('logs out when log out is clicked', async () => {
+        mockUserDispatch(setUser("123", "adel@shakal.com", "Password@1"))
+        const {rerender} = render(<Enviroment element={<CustomNavbar/>} />);
 
-
-        renderWithRouter(<CustomNavbar />);
 
         const logOutButton = screen.getByRole("button", {name : "Log out"})
         expect(logOutButton).toBeInTheDocument()
 
         fireEvent.click(logOutButton)
-        expect(screen.getByRole("button", {name : "Login"})).toBeInTheDocument()
+        rerender(<Enviroment element={<CustomNavbar/>} />)
+
+        await waitFor(() => {
+            expect(screen.getByRole("button", {name : "Login"})).toBeInTheDocument()
+        })
     })
 })
-
 
