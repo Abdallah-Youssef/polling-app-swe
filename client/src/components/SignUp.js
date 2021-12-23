@@ -58,7 +58,7 @@ const SignUp = () => {
                     />
                     <FormControl.Feedback type='invalid'>
                         <ul>
-                            <li>Invalid email address </li>
+                            <li>Invalid email address</li>
                         </ul>
                     </FormControl.Feedback>
                 </Form.Group>
@@ -74,7 +74,7 @@ const SignUp = () => {
                     />
                     <FormControl.Feedback type='invalid'>
                         <ul>
-                            <li>The password must contain at least 1 lowercase alphabetical character </li>
+                            <li>The password must contain at least 1 lowercase alphabetical character</li>
                             <li>The password must contain at least 1 uppercase alphabetical character</li>
                             <li>The password must contain at least 1 numeric character</li>
                             <li>The password must contain at least one special character [!@#$%^*]</li>

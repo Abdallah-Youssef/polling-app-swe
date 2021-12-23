@@ -21,8 +21,6 @@ const Login = () => {
         } catch (error) {
             alert(error);
         }
-
-        console.log(user);
     };
 
     return (

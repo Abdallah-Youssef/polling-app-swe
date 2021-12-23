@@ -4,9 +4,9 @@ import { logIn, createAccount } from "../api/user";
 export const CLEAR_USER = "CLEAR_USER";
 export const SET_USER = "SET_USER";
 
-const clearUser = () => ({ type: CLEAR_USER });
+export const clearUser = () => ({ type: CLEAR_USER });
 
-const setUser = (id, email, password) => ({
+export const setUser = (id, email, password) => ({
     type: SET_USER,
     user: { id, email, password },
 });
