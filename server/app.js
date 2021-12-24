@@ -65,7 +65,7 @@ app.get('/', async (req, res)=>{
     .populate('postedBy',
      {_id:0, display_name: 1});
     console.log(polls);
-    res.status(200).json({polls: polls});
+    res.status(200).json({polls: polls.reverse()});
 });
 
 
