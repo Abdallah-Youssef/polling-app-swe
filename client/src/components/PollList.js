@@ -1,5 +1,6 @@
+import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { getAllPolls } from "../api/poll";
+import { getAllPolls } from "../api/allPolls";
 import { ListGroup, Badge, Container } from "react-bootstrap";
 
 const PollList = () => {
@@ -17,11 +18,11 @@ const PollList = () => {
         });
     }, []);
 
+    
     return (
         <Container className="w-50 mt-5">
 
             <h1>{error}</h1>
-
 
             <ListGroup as="ul" numbered>
                 {polls.map((poll, i) => (
@@ -29,13 +30,21 @@ const PollList = () => {
                         className="d-flex justify-content-between align-items-start"
                         key={i}
                     >
-                        <div className="ms-2 me-auto">
+                       
+                       <Link
+                            style={{ display: "block", margin: "1rem 0" }}
+                            to={`/polls/${poll._id}`}
+                            key={poll._id}
+                        >
+                            {poll.question}
+                        </Link>
+                        {/* <Link to="/signup" className="ms-2 me-auto">
                             <div className="fw-bold">{poll.question}</div>
-                        </div>
+                        </Link>
 
                         <Badge variant="primary" pill>
                             14
-                        </Badge>
+                        </Badge> */}
                     </ListGroup.Item>
                 ))}
             </ListGroup>

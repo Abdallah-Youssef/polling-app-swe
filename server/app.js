@@ -8,6 +8,7 @@ const voteRouter = require("./routes/vote_routes");
 const passport = require("passport");
 const mongoose = require("mongoose");
 const Poll = require('./models/poll_schema');
+const Vote = require('./models/vote_schema');
 
 mongoose.connect(
   "mongodb+srv://adel:shakal@polling-app-cluster.pwaav.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
@@ -46,7 +47,7 @@ app.use("/userAuth", authRouter);
 app.use("/user", passport.authenticate("jwt", { session: false }), userRouter);
 
 app.use(
-  "/poll",
+  "/polls",
   DEBUG_FUNC,
   passport.authenticate("jwt", { session: false }),
   pollRouter
@@ -67,11 +68,6 @@ app.get('/', async (req, res)=>{
     res.status(200).json({polls: polls});
 });
 
-app.get('/polls/:pollId', async (req, res) => { 
-  const poll = await Poll.findById(req.params.pollId)
-  await poll.populate('postedBy', {_id: 0, display_name: 1}).execPopulate();
-  res.send(poll);
-})
 
 /**
  * The sharing ID

@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import MyPolls from "./components/MyPolls";
 import RequireAuth from "./components/RequireAuth";
 import Login from "./components/Login";
+import Poll from "./components/Poll"
 import SignUp from "./components/SignUp";
 import { userReducer, UserContext } from "./reducers/user";
 import { useReducer } from "react";
@@ -20,12 +21,22 @@ function App() {
           <Route element={<RequireAuth />}>
             <Route exact path="/create" element={<CreatePoll />} />
             <Route exact path="/mypolls" element={<MyPolls />} />
+            <Route path="/polls/:pollId" element={<Poll />}/>
           </Route>
 
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
 
           <Route path="/" element={<PollList/>} />
+
+          <Route
+            path="*"
+            element={
+              <main style={{ padding: "1rem" }}>
+                <p>There's nothing here!</p>
+              </main>
+            }
+          />
         </Routes>
       </UserContext.Provider>
 

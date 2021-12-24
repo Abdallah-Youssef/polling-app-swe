@@ -11,12 +11,15 @@ const helper = require('../helpers/vote_helpers.js')
 voteRouter.post('/submit', async (req, res)=>{
     try
     {
+
         const voteData = {
             user: req.user.id,
             poll: req.body.poll,
             choice: req.body.choice,
             public: req.body.public
         };
+
+        console.log(voteData)
 
         if(!voteData.poll)
             throw new Error('Poll not found in request');
