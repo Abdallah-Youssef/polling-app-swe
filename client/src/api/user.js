@@ -39,3 +39,19 @@ export const logIn = (email, password) => {
 
 
 
+export const getMyPolls = () => {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Authorization", localStorage.getItem("token"))
+  
+    var requestOptions = {
+      method: "GET",
+      redirect: "follow",
+      headers: myHeaders,
+    };
+  
+    return fetch(apiURL + "/user/polls", requestOptions)
+      .then((response) => response.json())
+      .catch(() => alert("Failed to reach the server, Please try again later"));
+  };
+  
