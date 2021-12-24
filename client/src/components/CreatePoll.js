@@ -28,7 +28,7 @@ const CreatePoll = () => {
     const handleCreateClicked = async (event) => {
         event.preventDefault()
         const id = await createPoll(title, Private, options)
-        if (id) navigate('/poll/'+id)
+        if (id) navigate('/polls/'+id)
     }
 
 

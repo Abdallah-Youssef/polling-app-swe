@@ -84,7 +84,7 @@ export const createPoll = (title, Private, options) => {
         redirect: 'follow'
     };
 
-    return fetch(apiURL + "/poll/createPoll", requestOptions)
+    return fetch(apiURL + "/polls/createPoll", requestOptions)
         .then(response => response.json())
         .then(result => result.id)
         .catch(error => console.log('error', error));
