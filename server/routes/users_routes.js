@@ -4,6 +4,7 @@ const passport_config = require('../passport_config');
 const userRouter = express.Router();
 const User = require('../models/user_schema');
 const bcrypt = require('bcryptjs');
+const Poll = require('../models/poll_schema');
 
 userRouter.post('/changePassword', async (req, res) => {
     try
@@ -46,5 +47,17 @@ userRouter.post('/updateDisplayName', async (req, res) => {
         res.send('an error occured');
     }
 });
+
+userRouter.get('/polls', async (req, res) => {
+    let id = req.user._id;
+    console.log(id)
+    const polls = await Poll.find(
+        {
+            postedBy: id,
+        });
+    console.log(polls)
+    res.send(polls.reverse())
+});
+
 
 module.exports = userRouter;
