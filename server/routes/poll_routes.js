@@ -28,7 +28,7 @@ pollRouter.post('/createPoll', async (req, res)=>{
             pollData.photoURL = req.body.photoURL;
         const newPost = new Poll(pollData);
         await newPost.save();
-        return res.json({status: 'success'});
+        return res.json({status: 'success', id: newPost._id});
     }catch(error)
     {
         console.log('Error in send post: ' + error);
