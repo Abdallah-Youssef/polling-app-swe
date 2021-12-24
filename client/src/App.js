@@ -22,11 +22,12 @@ function App() {
             <Route exact path="/create" element={<CreatePoll />} />
             <Route exact path="/mypolls" element={<MyPolls />} />
             <Route path="/polls/:pollId" element={<Poll />}/>
+            <Route exact path="/user/polls" element={<MyPolls />}/>
           </Route>
 
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
-
+          
           <Route path="/" element={<PollList/>} />
 
           <Route
