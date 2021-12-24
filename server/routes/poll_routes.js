@@ -80,6 +80,7 @@ async function isAuthorized(req, res, next){
 pollRouter.get('/getPollResults', isAuthorized, async (req, res) => {
     try
     {
+        /// ?????????????????????????????
         const results = await poll_helpers.getResults(req.votes);
         console.log(results);
         return res.json({status: 'success', results: results});
@@ -106,5 +107,38 @@ pollRouter.get('/getUserPolls', async (req, res) => {
         return res.json({status: 'error'});
     }
 });
+
+
+
+pollRouter.get('/:pollId', async (req, res) => { 
+    let userId = req.user.id
+    var poll = await Poll.findById(req.params.pollId)
+    
+    const votes = await Vote.find({poll: req.params.pollId});
+    let choices = new Array(poll.choices.length);
+    let voted = undefined;
+
+    for(let i=0; i<choices.length; i++) {
+        choices[i] = {};
+        choices[i]['text'] = poll.choices[i];
+        choices[i]['count'] = 0;
+    }
+
+    votes.forEach((vote) => {
+        choices[vote.choice].count++;
+        console.log(vote.user + " - " + userId)
+        if(vote.user == userId) {
+            voted = vote.choice
+        }
+    });
+
+    let newPoll = JSON.parse(JSON.stringify(poll));
+    newPoll['choices'] = choices;
+    newPoll['voted'] = voted;
+    res.send(newPoll);
+})
+
+
+  
 
 module.exports = pollRouter;
