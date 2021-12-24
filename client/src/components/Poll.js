@@ -27,6 +27,7 @@ const Poll = () => {
         console.log(index + " - " + poll.voted)
         if(poll.voted != undefined) {
             alert("you have alrady voted!")
+            return ;
         }
         
         let newPoll = Object.assign({}, poll);
@@ -36,7 +37,7 @@ const Poll = () => {
         console.log(status)
         if(status) {
             newPoll.voted = index;
-            newPoll.[ichoices[index].count++;
+            newPoll.choices[index].count++;
             setPoll(newPoll)
         }
 
@@ -50,7 +51,6 @@ const Poll = () => {
             <h2> {poll.question}  </h2>
             <br></br>
             <ListGroup as="ul" numbered>
-                
                 {
                 poll["choices"] && 
                 poll["choices"].map((choice, i) => (
@@ -65,20 +65,11 @@ const Poll = () => {
                     <Row>
                         <Col sm={8}>{choice.text}</Col>
                         <Col sm={4}>
-                            { poll.voted == i &&
-                                <span style={alignRight} class="float-right">
-                                    <Badge className="" bg="success" pill>
-                                        {choice.count}
-                                    </Badge>
-                                </span>
-                            } 
-                            { poll.voted != i &&
-                                <span style={alignRight} class="float-right">
-                                <Badge className="" bg="primary" pill>
-                                    {choice.count}
-                                </Badge>
-                                </span>
-                            }</Col>
+                            <Choice
+                                isVoted={(poll.voted == i)}
+                                voteCount={choice.count}
+                            /> 
+                        </Col>
                     </Row>
                 </Container>
                                     
@@ -91,15 +82,31 @@ const Poll = () => {
     )
 }
 
-/*
-{"polls":[
-    {"public":true,"choices":["Yes","No"],
-"_id":"61c39a59aee6623b60ddd68a",
-"postedBy":"61c212e078743f401426e042",
-"createdOn":"2021-12-22T21:36:25.310Z",
-"question":"How is it?","__v":0}
-]}
-*/
+const Choice = (props) => {
+    const isVoted = props.isVoted;
+    const voteCount = props.voteCount;  
+    
+    if(isVoted) {
+        return (
+            <span style={alignRight} class="float-right">
+                <Badge className="" bg="success" pill>
+                    {voteCount}
+                </Badge>
+            </span>   
+        )
+    }
+
+    else {
+        return (
+            <span style={alignRight} class="float-right">
+                <Badge className="" bg="primary" pill>
+                    {voteCount}
+                </Badge>
+            </span>
+        )
+    }
+}
+
 
 const alignRight = {
     float: 'right',

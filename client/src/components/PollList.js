@@ -31,20 +31,14 @@ const PollList = () => {
                         key={i}
                     >
                        
-                       <Link
+                       <Link style={pollStyle} class = "poll ms-2 me-auto"
                             style={{ display: "block", margin: "1rem 0" }}
                             to={`/polls/${poll._id}`}
                             key={poll._id}
                         >
-                            {poll.question}
+                            <span className="fw-bold">{poll.question}</span>
                         </Link>
-                        {/* <Link to="/signup" className="ms-2 me-auto">
-                            <div className="fw-bold">{poll.question}</div>
-                        </Link>
-
-                        <Badge variant="primary" pill>
-                            14
-                        </Badge> */}
+                       
                     </ListGroup.Item>
                 ))}
             </ListGroup>
@@ -53,5 +47,10 @@ const PollList = () => {
         </Container>
     );
 };
+
+const pollStyle = {
+    "text-decoration": "none", 
+    color: "red"
+}
 
 export default PollList;
