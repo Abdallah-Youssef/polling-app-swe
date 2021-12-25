@@ -5,6 +5,8 @@ const Vote = require('../models/vote_schema')
 const vote_helper = require('../helpers/vote_helpers')
 const poll_helpers = require('../helpers/poll_helpers')
 
+
+
 describe('stores an instance of everything', function(){
 
     it('correctly stores users', async function(){
@@ -199,3 +201,8 @@ describe('handles votes correctly', function(){
     })
 
 });
+
+
+
+
+

@@ -1,0 +1,5 @@
+{ 
+    "DBuserName": "adel",
+    "DBpass": "shakal",
+    "DBHost": "mongodb+srv://@polling-app-cluster.pwaav.mongodb.net/myFirstDatabase?retryWrites=true&w=majority" 
+}

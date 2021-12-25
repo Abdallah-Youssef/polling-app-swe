@@ -9,19 +9,22 @@ const passport = require("passport");
 const mongoose = require("mongoose");
 const Poll = require('./models/poll_schema');
 const Vote = require('./models/vote_schema');
+const config = require('config')
 
 mongoose.connect(
-  "mongodb+srv://adel:shakal@polling-app-cluster.pwaav.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    config.get('DBHost'),
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    user: config.get('DBuserName'),
+    pass: config.get('DBpass')
   },
   (err) => {
     if (err) {
       console.error(err);
       throw new Error("Error Connecting to Database");
     }
-    console.log("Connected to DB");
+    console.log("Connected to DB " + config.get('DBHost'))
   }
 );
 
@@ -81,3 +84,5 @@ app.get('/shared_poll/:pollId', async (req, res) =>{
 app.listen(5000, () => {
   console.log("Hemlo to meow app!");
 });
+
+module.exports = app

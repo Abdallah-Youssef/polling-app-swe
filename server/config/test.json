@@ -1,0 +1,5 @@
+{ 
+    "DBuserName": "root",
+    "DBpass": "example",
+    "DBHost": "mongodb://localhost" 
+}
