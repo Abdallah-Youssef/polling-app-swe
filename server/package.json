@@ -22,7 +22,7 @@
     "pg": "^8.5.1"
   },
   "scripts": {
-    "test": "SET NODE_ENV=test&& mocha",
+    "test": "SET NODE_ENV=test&& mocha --timeout 5000",
     "start": "SET NODE_ENV=development&& nodemon index.js"
   },
   "author": "",
