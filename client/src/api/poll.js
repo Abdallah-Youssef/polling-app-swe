@@ -49,10 +49,10 @@ export const submitChoice = (pollId, choiceIndex, isPublic) => {
 
 /**
  * 
- * @param {*} title 
- * @param {*} Private 
- * @param {*} options 
- * @returns on success id of the created poll
+ * @param {string} title 
+ * @param {boolean} Private 
+ * @param {Array.<string>} options 
+ * @returns on success, id of the created poll
  */
 export const createPoll = (title, Private, options) => {
 

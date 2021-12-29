@@ -31,7 +31,7 @@ const PollList = () => {
                         key={i}
                     >
                        
-                       <Link style={pollStyle} class = "poll ms-2 me-auto"
+                       <Link style={pollStyle} className = "poll ms-2 me-auto"
                             style={{ display: "block", margin: "1rem 0" }}
                             to={`/polls/${poll._id}`}
                             key={poll._id}

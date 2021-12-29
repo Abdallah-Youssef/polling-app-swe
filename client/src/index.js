@@ -5,11 +5,15 @@ import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import fetchIntercept from "fetch-intercept";
-import { apiURL } from "./api/url";
+import {  nonAuthenticatedURL } from "./api/url";
 
 fetchIntercept.register({
   request: function (url, config) {
-    if (url.startsWith(apiURL + "/userAuth")) return [url, config];
+    if (nonAuthenticatedURL(url)) {
+        console.log(url)
+        console.log("No token needed");
+        return [url, config];
+    }
 
     console.log("Incoming request " + url, config);
     console.log("token in interceptor " + localStorage.getItem("token"));
