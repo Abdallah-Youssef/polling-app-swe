@@ -20,10 +20,6 @@ const PollSchema = new Schema({
         type: Boolean, 
         default: true
     },
-    /*anonymous: { // do users vote anonymously? TODO
-        type: Boolean,
-        default: false
-    },*/
     choices: {
         type: [String],
         validate: {
@@ -32,17 +28,7 @@ const PollSchema = new Schema({
             },
             message: "Poll has less than 2 choices"
         }
-    }/*,
-    results:{ // store the results for fast retrieval and if we make the votes anonymous
-        type: [Number],
-        default: function(){
-            const len = this.choices.length;
-            let temp = [];
-            for (let i = 0; i < len; i++)
-                temp.push(0);
-            return temp;
-        }
-    }*/
+    }
 });
 
 
@@ -52,12 +38,6 @@ const PollSchema = new Schema({
  * Else associate the vote with the user
  */
 PollSchema.static('submitVote', async function(voteData){
-    /* const poll = await this.findById(voteData.poll)//.exec();
-
-    if (voteData.choice >= poll.choices.length)
-        throw new Error("Choice doesn't exit");
-    if (voteData.choide < 0)
-        throw new Error("Negative choice");*/
 
     const existingVote = await Vote.findOne({
         user: voteData.user, 
@@ -69,19 +49,9 @@ PollSchema.static('submitVote', async function(voteData){
 
     let saveVote = new Vote(voteData);
     
-    /*if (poll.anonymous) {
-        saveVote = new Vote({
-            user: voteData.user,
-            poll: voteData.poll
-        });
-    }
-    else {
-        saveVote = new Vote(voteData);
-    }*/
 
     await saveVote.save();
 
-    // TODO await poll.update({$inc : {'results.$[]' : 1}});
 });
 
 
@@ -104,35 +74,29 @@ PollSchema.static('changeVote', async function(newVoteData){
  *          text: string,
  *          count: Number
  *      }],
- *      voted: Number // the choice this user voted for, if available
  * }
  * 
  * It is an instance method because the endpoint already fetches the poll
  */
-PollSchema.method('getResultSummary', async function(userId){
+PollSchema.method('getResultSummary', async function(){
     // TODO anonymous
 
-    const votes = await Vote.find({poll: this.id});
-    let choices = new Array(this.choices.length);
-    let voted = undefined;
+    const poll = this;
+    const votes = await Vote.find({poll: poll.id});
+    let choices = new Array(poll.choices.length);
     let ans = {};
 
     for(let i=0; i<choices.length; i++) {
         choices[i] = {};
-        choices[i]['text'] = this.choices[i];
+        choices[i]['text'] = poll.choices[i];
         choices[i]['count'] = 0;
     }
 
     votes.forEach((vote) => {
         choices[vote.choice].count++;
-        console.log(vote.user + " - " + userId)
-        if(vote.user == userId) {
-            voted = vote.choice
-        }
     });
 
     ans['choices'] = choices;
-    ans['voted'] = voted;
     //console.log(`Summary is ${JSON.stringify(ans)}`);
     return ans;
 });

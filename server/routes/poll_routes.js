@@ -12,7 +12,7 @@ const Vote = require('../models/vote_schema');
  *     choices: string[]
  * }
  */
-pollRouter.post('/createPoll', async (req, res)=>{
+pollRouter.post('/create', async (req, res)=>{
     try
     {
         const pollData = {
@@ -78,48 +78,35 @@ async function isAuthorized(req, res, next){
 
 
 /**
- * Responds with the user's public and private polls 
- * if they are the one sending the request
- * or only the public ones if anybody else.
- * Response format: [{
- *      createdOn: Date
- *      question: string
- *      public: boolean
- *      choices: string[]  
- * }]
+ * If the user is authorized to see the results (voter or creator)
+ * it returns the results in the format
+ *   {
+ *      choices : [{
+ *          text: string,
+ *          count: Number
+ *      }]
+ *   }
  */
-pollRouter.get('/data/:userId', async (req, res) => {
-    try
-    {
-        const polls = await Poll.find({postedBy: req.params.userId});
-        const publisher = req.params.userId == req.user.id;
-        const filtered = polls.filter((p) => publisher || p.public);
-        return res.json({status: 'success', polls: filtered});
-    }catch(error)
-    {
-        console.log('Error in get poll data: ' + error);
-        return res.json({status: 'error'});
-    }
+pollRouter.get('/results/:pollId', isAuthorized, async (req, res) => { 
+    var poll = await Poll.findById(req.params.pollId);
+    //console.log(`\n\nRequesting the poll ${poll}`);
+    
+    const summary = await poll.getResultSummary();
+    //console.log(`Summary is ${JSON.stringify(summary)}`);
+
+    res.send(summary);
 });
 
 
 /**
- * If the user is authorized to see the results (voter or creator)
- * it returns the results in the format
- * [{
- *      choice (string) : count (Number)
- * }]
+ * Returns the choice this user has voted for if the poll is not anonymous
+ * .. just a number
  */
-pollRouter.get('/results/:pollId', isAuthorized, async (req, res) => { 
-    let userId = req.user.id
-    var poll = await Poll.findById(req.params.pollId);
-    //console.log(`\n\nRequesting the poll ${poll}`);
-    
-    const summary = await poll.getResultSummary(userId);
-    //console.log(`Summary is ${JSON.stringify(summary)}`);
-
-    res.send(summary);
-})
+pollRouter.get('/:pollId/vote/:userId', async (req, res) => {
+    //TODO anonymous
+    let vote = await Vote.find({user: req.params.userId, poll: req.params.pollId});
+    res.send(vote.choice);
+});
 
 
   

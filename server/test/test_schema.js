@@ -4,11 +4,12 @@ const User = require('../models/user_schema')
 const Vote = require('../models/vote_schema')
 
 
+let dummy_user, tummy_user, yummy_user;
 
 describe('stores an instance of everything', function(){
 
     it('correctly stores users', async function(){
-        const user = new User({
+        dummy_user = new User({
             display_name: 'dummy_user', 
             login_method: 'local',
             local: {
@@ -17,8 +18,8 @@ describe('stores an instance of everything', function(){
             }
         });
 
-        await user.save();
-        assert(!user.isNew);
+        await dummy_user.save();
+        assert(!dummy_user.isNew);
     });
 
 
@@ -110,10 +111,9 @@ describe('basic validation', function(){
 describe('handles votes correctly', function(){
 
     let poll;
-    let second_user;
 
     it('rejects duplicate votes', async function(){
-        second_user = new User({
+        yummy_user = new User({
             display_name: 'yummy_user', 
             login_method: 'local',
             local: {
@@ -121,21 +121,21 @@ describe('handles votes correctly', function(){
                 password: 'hi;k'
             }
         });
-        await second_user.save();
+        await yummy_user.save();
     
         poll = await Poll.findOne({
             question: "what are you?"
         });
 
         const first_vote = {
-            user: second_user.id,
+            user: yummy_user.id,
             poll: poll.id,
             choice: 1
         };
         await assert.doesNotReject(Poll.submitVote(first_vote));
 
         const second_vote = {
-            user: second_user.id,
+            user: yummy_user.id,
             poll: poll.id,
             choice: 0
         };        
@@ -197,8 +197,23 @@ describe('handles votes correctly', function(){
         //console.log(second_user.id);
 
         assert(!voters.includes(fourth_user.id.toString()));
-        assert(voters.includes(second_user.id.toString()));
-    })
+        assert(voters.includes(yummy_user.id.toString()));
+    });
+
+    it('changes votes correctly', async function(){
+        const changed_vote = {
+            user: yummy_user.id,
+            poll: poll.id,
+            choice: 0
+        };
+
+        await assert.doesNotReject(Poll.changeVote(changed_vote));
+
+        const results = await poll.getResultSummary();
+
+        assert.equal(results.choices[0].count, 2);
+        assert.equal(results.choices[1].count, 1);
+    });
 
 });
 

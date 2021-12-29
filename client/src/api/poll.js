@@ -10,7 +10,7 @@ export const getPoll = (pollId) => {
     headers: myHeaders
   };
 
-  return fetch(apiURL + "/polls/" + pollId, requestOptions) 
+  return fetch(apiURL + "/poll/" + pollId, requestOptions) 
     .then((response) => response.json())
     .catch(() => alert("Failed to reach the server, Please try again later"));
 };
@@ -38,7 +38,7 @@ export const submitChoice = (pollId, choiceIndex, isPublic) => {
     body: raw
   };
 
-  return fetch(apiURL + "/vote/submit", requestOptions) 
+  return fetch(apiURL + "/votes/submit", requestOptions) 
     .then(async (response) => {
       let statusObject = await response.json();
       console.log(statusObject)
@@ -72,7 +72,7 @@ export const createPoll = (title, Private, options) => {
         redirect: 'follow'
     };
 
-    return fetch(apiURL + "/polls/createPoll", requestOptions)
+    return fetch(apiURL + "/polls/create", requestOptions)
         .then(response => response.json())
         .then(result => result.id)
         .catch(error => console.log('error', error));

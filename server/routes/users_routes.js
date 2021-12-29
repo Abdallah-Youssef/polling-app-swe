@@ -60,15 +60,23 @@ userRouter.post('/updateDisplayName', async (req, res) => {
  *      choices: string[]  
  * }]
  */
-userRouter.get('/polls', async (req, res) => {
-    let id = req.user._id;
-    const publisher = req.params.userId == id;
-    console.log(id)
-    const polls = await Poll.find(
-        {
-            postedBy: id,
-            public: !publisher
-        });
+userRouter.get('/polls/:userId?', async (req, res) => {
+    let requesting_user = req.user._id;
+    let requested_user;
+    if (req.params.userId)
+        requested_user = req.params.userId;
+    else
+        requested_user = requesting_user;
+        
+    let filter = {postedBy: req.params.userId};
+
+    if (requesting_user != requested_user){
+        filter['public'] = true;
+        console.log("The requester is not the creator");
+    }
+    //console.log(id)
+
+    const polls = await Poll.find(filter);
     console.log(polls)
     res.send(polls.reverse())
 });
