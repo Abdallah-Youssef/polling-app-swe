@@ -67,7 +67,7 @@ app.get('/', async (req, res)=>{
     const polls = await Poll.find({public: true})
     .populate('postedBy',
      {_id:0, display_name: 1});
-    console.log(polls);
+    //console.log(`MAIN ENDPOINT ${polls}`);
     res.status(200).json({polls: polls.reverse()});
 });
 

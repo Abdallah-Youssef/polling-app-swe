@@ -48,12 +48,26 @@ userRouter.post('/updateDisplayName', async (req, res) => {
     }
 });
 
+
+/**
+ * Responds with the user's public and private polls 
+ * if they are the one sending the request
+ * or only the public ones if anybody else.
+ * Response format: [{
+ *      createdOn: Date
+ *      question: string
+ *      public: boolean
+ *      choices: string[]  
+ * }]
+ */
 userRouter.get('/polls', async (req, res) => {
     let id = req.user._id;
+    const publisher = req.params.userId == id;
     console.log(id)
     const polls = await Poll.find(
         {
             postedBy: id,
+            public: !publisher
         });
     console.log(polls)
     res.send(polls.reverse())

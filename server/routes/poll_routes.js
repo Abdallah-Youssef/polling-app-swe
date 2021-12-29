@@ -2,7 +2,6 @@ const express = require('express');
 const pollRouter = express.Router();
 const Poll = require('../models/poll_schema');
 const Vote = require('../models/vote_schema');
-const poll_helpers = require('../helpers/poll_helpers');
 
 
 /**
@@ -57,13 +56,17 @@ pollRouter.delete('/deletePost', async (req, res) => {
 });
 */
 
-
+/**
+ * checks if the user issuing the request is the creator
+ * or a voter
+ */
 async function isAuthorized(req, res, next){
-    const poll = await Poll.findById(req.body.id);
+    //console.log(req.params.pollId);
+    const poll = await Poll.findById(req.params.pollId);
     const votes = await Vote.find({poll: poll.id});
     const voters = votes.map(v => v.user.toString());
     if (req.user.id == poll.postedBy.toString() 
-        || voters.includes(req.user.id.toString())){
+        || voters.includes(req.user.id)){
 
             req.votes = votes;
             next();
@@ -73,69 +76,49 @@ async function isAuthorized(req, res, next){
     }
 }
 
-/** Checks if the user has voted or has created the poll
- * needs the poll id in the body
- * then returns an array {{choice, voter name (if the vote is public)}}
+
+/**
+ * Responds with the user's public and private polls 
+ * if they are the one sending the request
+ * or only the public ones if anybody else.
+ * Response format: [{
+ *      createdOn: Date
+ *      question: string
+ *      public: boolean
+ *      choices: string[]  
+ * }]
  */
-pollRouter.get('/getPollResults', isAuthorized, async (req, res) => {
+pollRouter.get('/data/:userId', async (req, res) => {
     try
     {
-        /// ?????????????????????????????
-        const results = await poll_helpers.getResults(req.votes);
-        console.log(results);
-        return res.json({status: 'success', results: results});
+        const polls = await Poll.find({postedBy: req.params.userId});
+        const publisher = req.params.userId == req.user.id;
+        const filtered = polls.filter((p) => publisher || p.public);
+        return res.json({status: 'success', polls: filtered});
     }catch(error)
     {
-        console.log('Error in delete post: ' + error);
+        console.log('Error in get poll data: ' + error);
         return res.json({status: 'error'});
     }
 });
 
 
 /**
- * We need this path for private (and public) posts
+ * If the user is authorized to see the results (voter or creator)
+ * it returns the results in the format
+ * [{
+ *      choice (string) : count (Number)
+ * }]
  */
-pollRouter.get('/getUserPolls', async (req, res) => {
-    try
-    {
-        const polls = await Poll.find({postedBy: req.body.id});
-        console.log(polls);
-        return res.json({status: 'success', polls: polls});
-    }catch(error)
-    {
-        console.log('Error in delete post: ' + error);
-        return res.json({status: 'error'});
-    }
-});
-
-
-
-pollRouter.get('/:pollId', async (req, res) => { 
+pollRouter.get('/results/:pollId', isAuthorized, async (req, res) => { 
     let userId = req.user.id
-    var poll = await Poll.findById(req.params.pollId)
+    var poll = await Poll.findById(req.params.pollId);
+    //console.log(`\n\nRequesting the poll ${poll}`);
     
-    const votes = await Vote.find({poll: req.params.pollId});
-    let choices = new Array(poll.choices.length);
-    let voted = undefined;
+    const summary = await poll.getResultSummary(userId);
+    //console.log(`Summary is ${JSON.stringify(summary)}`);
 
-    for(let i=0; i<choices.length; i++) {
-        choices[i] = {};
-        choices[i]['text'] = poll.choices[i];
-        choices[i]['count'] = 0;
-    }
-
-    votes.forEach((vote) => {
-        choices[vote.choice].count++;
-        console.log(vote.user + " - " + userId)
-        if(vote.user == userId) {
-            voted = vote.choice
-        }
-    });
-
-    let newPoll = JSON.parse(JSON.stringify(poll));
-    newPoll['choices'] = choices;
-    newPoll['voted'] = voted;
-    res.send(newPoll);
+    res.send(summary);
 })
 
 

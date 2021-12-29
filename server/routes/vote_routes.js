@@ -1,7 +1,6 @@
 const express = require('express');
-const Vote = require('../models/vote_schema');
+const Poll = require('../models/poll_schema');
 const voteRouter = express.Router();
-const helper = require('../helpers/vote_helpers.js')
 
 /**
  * A user can submit a vote only once and cannot change it.
@@ -24,7 +23,7 @@ voteRouter.post('/submit', async (req, res)=>{
         if(!voteData.poll)
             throw new Error('Poll not found in request');
 
-        await helper(voteData);
+        await Poll.submitVote(voteData);
         return res.json({status: 'successVote'});
     }catch(error)
     {
