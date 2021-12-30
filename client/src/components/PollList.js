@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ListGroup, Container } from "react-bootstrap";
+import Loading from "./Loading";
 
 const PollList = ({ polls }) => {
 
@@ -13,32 +14,34 @@ const PollList = ({ polls }) => {
                         <ListGroup as="ul" numbered>
                             {polls.map((poll, i) => (
                                 <ListGroup.Item
-                                    className="d-flex justify-content-between align-items-start"
                                     key={i}
                                 >
 
-                                    <Link style={pollStyle} className="poll ms-2 me-auto"
+                                    <Link style={pollStyle} className="my-2"
                                         to={`/polls/${poll._id}`}
                                         key={poll._id}
                                     >
-                                        <span className="fw-bold">{poll.question}</span>
+                                        <h2 className="fw-bold">{poll.question}</h2>
                                     </Link>
+
+                                    <Link to={`/user/${poll.postedBy._id}`}>
+                                        {poll.postedBy.local.email}
+                                    </Link>
+
 
                                 </ListGroup.Item>
                             ))}
                         </ListGroup>
                      :
-                    <h3 className="display-5">Loading ... </h3>
+                    <Loading/>
             }
             </Container>
     );
 };
 
 const pollStyle = {
-    "text-decoration": "none",
-    color: "red",
-    display: "block",
-    margin: "1rem 0"
+    textDecoration: "none",
+    color: "black",
 }
 
 export default PollList;

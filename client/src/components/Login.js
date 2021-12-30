@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import React, { useState, useContext } from "react";
 import { Form, Button, Container } from "react-bootstrap";
 import { handleLogIn, UserContext } from "../reducers/user";
@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const Login = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { dispatch } = useContext(UserContext);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -17,11 +18,15 @@ const Login = () => {
         e.preventDefault();
         try {
             await handleLogIn(email, password)(dispatch);
-            navigate('/')
+
+            // Go back to the page you were at before login
+            navigate(location.state.from ?? '/')
         } catch (error) {
             alert(error);
         }
     };
+
+    
 
     return (
         <div>

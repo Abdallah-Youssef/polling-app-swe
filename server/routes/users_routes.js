@@ -47,13 +47,17 @@ userRouter.post('/updateDisplayName', async (req, res) => {
 });
 
 /**
- * @api {get} /user/polls Return all user polls
+ * @api {get} /user/polls Get all user polls
  * @apiName GetUserPolls
  * @apiGroup User
  *
- * @apiParam {String} userId Id of user
+ * @apiQuery {String} userId Id of user
  * 
  * @apiSuccess {Poll[]} Body User's polls
+ * @apiSuccess {String} postedBy Author info
+ * @apiSuccess {String} postedBy._id  User id of the author
+ * @apiSuccess {String} postedBy.local 
+ * @apiSuccess {String} postedBy.local.email  Email of the author
  * 
  * 
  * @apiParamExample Request-Example:
@@ -61,13 +65,36 @@ userRouter.post('/updateDisplayName', async (req, res) => {
  */
 userRouter.get('/polls', async (req, res) => {
     let id = req.query.userId;
-    const polls = await Poll.find(
-        {
-            postedBy: id,
-        });
+    const polls = await Poll.find({postedBy: id})
+    .populate('postedBy',{_id:1, display_name: 1, 'local.email': 1});
 
     res.send(polls.reverse())
 });
+
+
+/**
+ * @api {get} /user/:userId Get user info
+ * @apiName GetUser
+ * @apiGroup User
+ *
+ * @apiParameter {String} userId Id of user
+ * 
+ * @apiSuccess {String} email User's email
+ * @apiSuccess {String} [display_name] User's display_name
+ * 
+ * @apiParamExample Request-Example:
+ * user/61c212e078743f401426e042
+ */
+ userRouter.get('/:userId', async (req, res) => {
+    let id = req.params.userId;
+    const user = await User.findById(id);
+
+    res.send({
+        email: user.local.email,
+        display_name: user.display_name
+    })
+});
+
 
 
 module.exports = userRouter;

@@ -3,6 +3,7 @@ const pollRouter = express.Router();
 const Poll = require('../models/poll_schema');
 const Vote = require('../models/vote_schema');
 const poll_helpers = require('../helpers/poll_helpers');
+const User = require('../models/user_schema');
 
 
 /**
@@ -109,10 +110,28 @@ pollRouter.get('/getUserPolls', async (req, res) => {
 });
 
 
-
+/**
+ * @api {get} /polls/:pollId Get poll data
+ * @apiName GetPoll
+ * @apiGroup Polls
+ *
+ * @apiParam {String} pollId 
+ * @apiParamExample Request-Example:
+ * polls/61cc3e0640db240f38f69a28
+ * 
+ * @apiSuccess {Poll} poll Poll Data
+ * @apiSuccess {Object} author Info of author
+ * @apiSuccess {String} author.email User email
+ * @apiSuccess {String} [author.display_name] User's display name
+ * @apiSuccess {String} author.id User id
+ * 
+ */
 pollRouter.get('/:pollId', async (req, res) => { 
-    let userId = req.user.id
-    var poll = await Poll.findById(req.params.pollId)
+    const poll = await Poll.findById(req.params.pollId)
+    const userId = req.user.id
+    
+    const authorId = poll.postedBy
+    const author = await User.findById(authorId)
     
     const votes = await Vote.find({poll: req.params.pollId});
     let choices = new Array(poll.choices.length);
@@ -135,7 +154,14 @@ pollRouter.get('/:pollId', async (req, res) => {
     let newPoll = JSON.parse(JSON.stringify(poll));
     newPoll['choices'] = choices;
     newPoll['voted'] = voted;
-    res.send(newPoll);
+    res.send({
+        poll:newPoll,
+        author: {
+            display_name: author.display_name,
+            email: author.local.email,
+            id: author._id
+        }
+    });
 })
 
 

@@ -55,3 +55,19 @@ export const getMyPolls = () => {
       .catch(() => alert("Failed to reach the server, Please try again later"));
   };
   
+
+/**
+ * 
+ * @param {String} userId 
+ * @return {User} user
+ */
+export const getUserInfo = (userId) => {
+    const requestOptions = {
+      method: 'GET',
+      redirect: 'follow'
+    };
+    
+    return fetch(apiURL + "/user/" + userId, requestOptions)
+      .then(response => response.json())
+      .catch(error => console.log('error', error));
+}

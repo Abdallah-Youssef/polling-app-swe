@@ -10,15 +10,11 @@ import {  nonAuthenticatedURL } from "./api/url";
 fetchIntercept.register({
   request: function (url, config) {
     if (nonAuthenticatedURL(url)) {
-        console.log(url)
-        console.log("No token needed");
+        //No token needed
         return [url, config];
     }
 
-    console.log("Incoming request " + url, config);
-    console.log("token in interceptor " + localStorage.getItem("token"));
     let myHeaders = new Headers();
-
     myHeaders.append("Authorization", localStorage.getItem("token"));
 
     if (!config) {
