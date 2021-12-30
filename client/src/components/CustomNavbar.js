@@ -22,7 +22,7 @@ const CustomNavbar = () => {
             <Navbar bg="dark" variant="dark">
                 <Container>
                     <Navbar.Brand as={Link} to="/">
-                        Polling Website{" "}
+                        Polling Website
                     </Navbar.Brand>
 
                     {user.email ? (
@@ -32,12 +32,11 @@ const CustomNavbar = () => {
                                 <Nav.Link as={Link} to="/create" className="mx-2">
                                     Create Poll
                                 </Nav.Link>
-                                <Nav.Link as={Link} to="/mypolls" className="mx-2">
-                                    My Polls
+                                <Nav.Link as={Link} to={"/user/"+user.id} className="mx-2">
+                                    My Profile
                                 </Nav.Link>
                                 <Button className="mx-2" onClick={handleLogOutClicked}>
-                                    {" "}
-                                    Log out{" "}
+                                    Log out
                                 </Button>
                             </Nav>
                         </>

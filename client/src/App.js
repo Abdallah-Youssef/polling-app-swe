@@ -1,14 +1,14 @@
 import CreatePoll from "./components/CreatePoll";
 import CustomNavbar from "./components/CustomNavbar";
 import { Routes, Route } from "react-router-dom";
-import MyPolls from "./components/MyPolls";
 import RequireAuth from "./components/RequireAuth";
 import Login from "./components/Login";
 import Poll from "./components/Poll"
 import SignUp from "./components/SignUp";
 import { userReducer, UserContext } from "./reducers/user";
 import { useReducer } from "react";
-import PollList from "./components/PollList";
+import HomePage from "./components/HomePage";
+import Profile from "./components/Profile";
 function App() {
   const [user, dispatch] = useReducer(userReducer, {});
 
@@ -20,15 +20,14 @@ function App() {
         <Routes>
           <Route element={<RequireAuth />}>
             <Route exact path="/create" element={<CreatePoll />} />
-            <Route exact path="/mypolls" element={<MyPolls />} />
             <Route path="/polls/:pollId" element={<Poll />}/>
-            <Route exact path="/user/polls" element={<MyPolls />}/>
+            <Route exact path="/user/:userId" element={<Profile />}/>
           </Route>
 
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           
-          <Route path="/" element={<PollList/>} />
+          <Route path="/" element={<HomePage/>} />
 
           <Route
             path="*"

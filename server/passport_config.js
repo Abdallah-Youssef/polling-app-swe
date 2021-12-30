@@ -16,7 +16,6 @@ passport.use(
         const existingUser = await User.findOne({ "local.email": email });
         if (existingUser) {
           const isPasswordMatch = await existingUser.validatePassword(password);
-          console.log(isPasswordMatch);
           if (isPasswordMatch) return done(null, existingUser);
           else return done(null, false, { message: "sharafanta7" });
         }
@@ -40,7 +39,6 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        console.log("gdfgdfgdfg");
         const existingUser = await User.findOne({ "facebook.id": profile.id });
         if (existingUser) return done(null, existingUser);
         const newUser = new User({
