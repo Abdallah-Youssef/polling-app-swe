@@ -25,7 +25,6 @@ voteRouter.post('/submit', async (req, res)=>{
             public: req.body.public
         };
 
-        console.log(voteData)
 
         if(!voteData.poll)
             throw new Error('Poll not found in request');

@@ -67,7 +67,7 @@ router.get('/oauth/facebook/callback',passport.authenticate('facebook', {session
 
 function debugReq(req, res, next)
 {
-    console.log(req.headers);
+    // console.log(req.headers);
     next();
 }
 

@@ -1,56 +1,47 @@
 import { Link } from "react-router-dom";
-import React, { useEffect, useState } from "react";
-import { getAllPolls } from "../api/allPolls";
-import { ListGroup, Badge, Container } from "react-bootstrap";
+import { ListGroup, Container } from "react-bootstrap";
+import Loading from "./Loading";
 
-const PollList = () => {
-    const [polls, setPolls] = useState([]);
-    const [error, setError] = useState("");
+const PollList = ({ polls }) => {
 
-    useEffect(() => {
-        getAllPolls().then((polls) => {
-            if (polls) {
-                setPolls(polls);
-                setError("");
-            }
 
-            else setError("Failed to reach server")
-        });
-    }, []);
 
-    
     return (
         <Container className="w-50 mt-5">
+            {
+                polls.length !== 0 ?
+                    
+                        <ListGroup as="ul" numbered>
+                            {polls.map((poll, i) => (
+                                <ListGroup.Item
+                                    key={i}
+                                >
 
-            <h1>{error}</h1>
+                                    <Link style={pollStyle} className="my-2"
+                                        to={`/polls/${poll._id}`}
+                                        key={poll._id}
+                                    >
+                                        <h2 className="fw-bold">{poll.question}</h2>
+                                    </Link>
 
-            <ListGroup as="ul" numbered>
-                {polls.map((poll, i) => (
-                    <ListGroup.Item
-                        className="d-flex justify-content-between align-items-start"
-                        key={i}
-                    >
-                       
-                       <Link style={pollStyle} class = "poll ms-2 me-auto"
-                            style={{ display: "block", margin: "1rem 0" }}
-                            to={`/polls/${poll._id}`}
-                            key={poll._id}
-                        >
-                            <span className="fw-bold">{poll.question}</span>
-                        </Link>
-                       
-                    </ListGroup.Item>
-                ))}
-            </ListGroup>
+                                    <Link to={`/user/${poll.postedBy._id}`}>
+                                        {poll.postedBy.local.email}
+                                    </Link>
 
 
-        </Container>
+                                </ListGroup.Item>
+                            ))}
+                        </ListGroup>
+                     :
+                    <Loading/>
+            }
+            </Container>
     );
 };
 
 const pollStyle = {
-    "text-decoration": "none", 
-    color: "red"
+    textDecoration: "none",
+    color: "black",
 }
 
 export default PollList;

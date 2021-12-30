@@ -3,7 +3,6 @@ const pollRouter = express.Router();
 const Poll = require('../models/poll_schema');
 const Vote = require('../models/vote_schema');
 
-
 /**
  * Request Format
  * {
@@ -90,12 +89,68 @@ async function isAuthorized(req, res, next){
 pollRouter.get('/results/:pollId', isAuthorized, async (req, res) => { 
     var poll = await Poll.findById(req.params.pollId);
     //console.log(`\n\nRequesting the poll ${poll}`);
-    
     const summary = await poll.getResultSummary();
     //console.log(`Summary is ${JSON.stringify(summary)}`);
 
     res.send(summary);
 });
+
+
+
+/**
+ * @api {get} /polls/:pollId Get poll data along with user's vote, if any
+ * @apiName GetPoll
+ * @apiGroup Polls
+ *
+ * @apiParam {String} pollId 
+ * @apiParamExample Request-Example:
+ * polls/61cc3e0640db240f38f69a28
+ * 
+ * @apiSuccess {Poll} poll Poll Data
+ * @apiSuccess {Object} author Info of author
+ * @apiSuccess {String} author.email User email
+ * @apiSuccess {String} [author.display_name] User's display name
+ * @apiSuccess {String} author.id User id
+ * 
+ */
+pollRouter.get('/:pollId', async (req, res) => { 
+    const poll = await Poll.findById(req.params.pollId)
+    const userId = req.user.id
+    
+    const authorId = poll.postedBy
+    const author = await User.findById(authorId)
+    
+    const votes = await Vote.find({poll: req.params.pollId});
+    let choices = new Array(poll.choices.length);
+    let voted = undefined;
+
+    for(let i=0; i<choices.length; i++) {
+        choices[i] = {};
+        choices[i]['text'] = poll.choices[i];
+        choices[i]['count'] = 0;
+    }
+
+    votes.forEach((vote) => {
+        choices[vote.choice].count++;
+        console.log(vote.user + " - " + userId)
+        if(vote.user == userId) {
+            voted = vote.choice
+        }
+    });
+
+    let newPoll = JSON.parse(JSON.stringify(poll));
+    newPoll['choices'] = choices;
+    newPoll['voted'] = voted;
+    res.send({
+        poll:newPoll,
+        author: {
+            display_name: author.display_name,
+            email: author.local.email,
+            id: author._id
+        }
+    });
+});
+
 
 
 /**
@@ -107,8 +162,6 @@ pollRouter.get('/:pollId/vote/:userId', async (req, res) => {
     let vote = await Vote.find({user: req.params.userId, poll: req.params.pollId});
     res.send(vote.choice);
 });
-
-
   
 
 module.exports = pollRouter;

@@ -10,7 +10,6 @@ userRouter.post('/changePassword', async (req, res) => {
     try
     {
         const {oldPassword, newPassword, confirmPassword} = req.body;
-        console.log(confirmPassword);
         const user = req.user;
 
         if(user.login_method !== 'local')
@@ -39,7 +38,6 @@ userRouter.post('/updateDisplayName', async (req, res) => {
     try
     {
         const user = req.user;
-        console.log(req.body.display_name);
         await User.findByIdAndUpdate(user.id, {$set: {display_name: req.body.display_name}});
         res.send('display_name updated successfully to ' + req.body.display_name);
     }catch(error)
@@ -59,6 +57,23 @@ userRouter.post('/updateDisplayName', async (req, res) => {
  *      public: boolean
  *      choices: string[]  
  * }]
+ * 
+ * @api {get} /user/polls/:userId? Get all public user polls if the requesting user is not the 
+ * requested user, or all public and private polls if the same person
+ * @apiName GetUserPolls
+ * @apiGroup User
+ *
+ * @apiParameter {String} userId Id of user
+ * 
+ * @apiSuccess {Poll[]} Body User's polls
+ * @apiSuccess {String} postedBy Author info
+ * @apiSuccess {String} postedBy._id  User id of the author
+ * @apiSuccess {String} postedBy.local 
+ * @apiSuccess {String} postedBy.local.email  Email of the author
+ * 
+ * 
+ * @apiParamExample Request-Example:
+ * user/polls?userId=61c212e078743f401426e042
  */
 userRouter.get('/polls/:userId?', async (req, res) => {
     let requesting_user = req.user._id;
@@ -68,7 +83,7 @@ userRouter.get('/polls/:userId?', async (req, res) => {
     else
         requested_user = requesting_user;
         
-    let filter = {postedBy: req.params.userId};
+    let filter = {postedBy: requested_user};
 
     if (requesting_user != requested_user){
         filter['public'] = true;
@@ -76,10 +91,37 @@ userRouter.get('/polls/:userId?', async (req, res) => {
     }
     //console.log(id)
 
-    const polls = await Poll.find(filter);
+    const polls = await Poll.find(filter)
+    .populate('postedBy',{_id:1, display_name: 1, 'local.email': 1});;
     console.log(polls)
     res.send(polls.reverse())
 });
+
+
+
+/**
+ * @api {get} /user/:userId Get user info
+ * @apiName GetUser
+ * @apiGroup User
+ *
+ * @apiParameter {String} userId Id of user
+ * 
+ * @apiSuccess {String} email User's email
+ * @apiSuccess {String} [display_name] User's display_name
+ * 
+ * @apiParamExample Request-Example:
+ * user/61c212e078743f401426e042
+ */
+ userRouter.get('/:userId', async (req, res) => {
+    let id = req.params.userId;
+    const user = await User.findById(id);
+
+    res.send({
+        email: user.local.email,
+        display_name: user.display_name
+    })
+});
+
 
 
 module.exports = userRouter;

@@ -42,7 +42,7 @@ app.use(
 );
 
 const DEBUG_FUNC = (req, res, next) => {
-  console.log(req.headers);
+  //console.log(req.headers);
   next();
 };
 
@@ -67,8 +67,7 @@ app.use('/votes', passport.authenticate('jwt', {session: false}), voteRouter);
 app.get('/', async (req, res)=>{
     const polls = await Poll.find({public: true})
     .populate('postedBy',
-     {_id:0, display_name: 1});
-    //console.log(`MAIN ENDPOINT ${polls}`);
+     {_id:1, display_name: 1, 'local.email': 1});
     res.status(200).json({polls: polls.reverse()});
 });
 
