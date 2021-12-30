@@ -11,7 +11,6 @@ module.exports = {
             votes.map(async (v) => {
                 if (v.public){
                     await v.populate('user', 'display_name').execPopulate();
-                    //console.log(`vote is ${v}`); execPopulate is deprecated in mongoose 6.. my GOD
                     return {choice: v.choice, voter: v.user.display_name};
                 }
                 return {choice: v.choice};

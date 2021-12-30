@@ -10,7 +10,6 @@ userRouter.post('/changePassword', async (req, res) => {
     try
     {
         const {oldPassword, newPassword, confirmPassword} = req.body;
-        console.log(confirmPassword);
         const user = req.user;
 
         if(user.login_method !== 'local')
@@ -39,7 +38,6 @@ userRouter.post('/updateDisplayName', async (req, res) => {
     try
     {
         const user = req.user;
-        console.log(req.body.display_name);
         await User.findByIdAndUpdate(user.id, {$set: {display_name: req.body.display_name}});
         res.send('display_name updated successfully to ' + req.body.display_name);
     }catch(error)
@@ -48,14 +46,26 @@ userRouter.post('/updateDisplayName', async (req, res) => {
     }
 });
 
+/**
+ * @api {get} /user/polls Return all user polls
+ * @apiName GetUserPolls
+ * @apiGroup User
+ *
+ * @apiParam {String} userId Id of user
+ * 
+ * @apiSuccess {Poll[]} Body User's polls
+ * 
+ * 
+ * @apiParamExample Request-Example:
+ * user/polls?userId=61c212e078743f401426e042
+ */
 userRouter.get('/polls', async (req, res) => {
-    let id = req.user._id;
-    console.log(id)
+    let id = req.query.userId;
     const polls = await Poll.find(
         {
             postedBy: id,
         });
-    console.log(polls)
+
     res.send(polls.reverse())
 });
 
