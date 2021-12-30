@@ -3,8 +3,11 @@
 * to **view** all polls without authentication
     GET /
 
-* to **view** the details of a poll (question, choices, creator, image, no need for authentication)
+* to **view** the details of a poll (question, choices, creator, image, **no need for authentication**)
     GET /poll/:pollId
+
+* to **view** the details of a poll (everything, **needs authentication**)
+    GET /polls/:pollId
 
 * to **create** a poll
     POST /polls/create
@@ -23,3 +26,6 @@
 
 * to **view** the polls of a particular user
     GET /user/polls/:userId? (the user ID is optional.. if omitted, then the logged in user)
+
+* to **view** the user details
+    GET /user/:userId

@@ -114,11 +114,11 @@ pollRouter.get('/results/:pollId', isAuthorized, async (req, res) => {
  * 
  */
 pollRouter.get('/:pollId', async (req, res) => { 
-    const poll = await Poll.findById(req.params.pollId)
+    const poll = await Poll.findById(req.params.pollId);
+    await poll.populate('postedBy').execPopulate();
     const userId = req.user.id
     
-    const authorId = poll.postedBy
-    const author = await User.findById(authorId)
+    const author = poll.postedBy;
     
     const votes = await Vote.find({poll: req.params.pollId});
     let choices = new Array(poll.choices.length);
