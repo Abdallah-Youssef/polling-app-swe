@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { getPoll, submitChoice } from "../api/poll";
 import { ListGroup, Badge, Container, Row, Col } from "react-bootstrap";
@@ -8,24 +8,28 @@ const Poll = () => {
     const [error, setError] = useState("");
     let params = useParams();
 
+
  
-    useEffect(async () => {    
-        console.log(params.pollId);
-        console.log(localStorage.getItem("token"));
-        const poll = await getPoll(params.pollId); 
-        console.log("new poll", poll) 
-        if (poll) {
-            setPoll(poll); 
-            setError("");
+    useEffect(() => {    
+        const fetchPoll = async () => {
+            const poll = await getPoll(params.pollId); 
+            console.log("new poll", poll) 
+    
+            if (poll) {
+                setPoll(poll); 
+                setError("");
+            }
+            else setError("Failed to reach server") 
         }
+        
+        fetchPoll()
+    }, [params.pollId]);
 
-        else setError("Failed to reach server") 
-
-    }, []);
+    
 
     const vote = async (index) => {
         console.log(index + " - " + poll.voted)
-        if(poll.voted != undefined) {
+        if(poll.voted !== undefined) {
             alert("you have alrady voted!")
             return ;
         }
@@ -48,6 +52,7 @@ const Poll = () => {
 
     return (
         <Container className='py-5 mt-5 w-50 border border-dark rounded'>
+            <h1>{error}</h1>
             <h2> {poll.question}  </h2>
             <br></br>
             <ListGroup as="ul" numbered>
@@ -66,7 +71,7 @@ const Poll = () => {
                         <Col sm={8}>{choice.text}</Col>
                         <Col sm={4}>
                             <Choice
-                                isVoted={(poll.voted == i)}
+                                isVoted={(poll.voted === i)}
                                 voteCount={choice.count}
                             /> 
                         </Col>
