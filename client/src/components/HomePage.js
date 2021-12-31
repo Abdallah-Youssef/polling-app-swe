@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { getAllPolls } from "../api/allPolls";
 import PollList from "./PollList";
-import { Button, InputGroup, FormControl, Container, Dropdown } from "react-bootstrap"
+import { Pagination, Button, InputGroup, FormControl, Container, Dropdown } from "react-bootstrap"
 const HomePage = () => {
     const [polls, setPolls] = useState([]);
+    const [activePage, setActivePage] = useState()
+    const [paginationCounter, setPaginationCounter] = useState([])
+    const [pagePolls, setPagePolls] = useState([]);
     const [error, setError] = useState("");
     const [searchBy, setSearchBy] = useState('Search By');
     const [searchAttribute, setSearchAttribute] = useState("")
@@ -11,21 +14,39 @@ const HomePage = () => {
         getAllPolls().then((polls) => {
             if (polls) {
                 setPolls(polls);
+                setPagePolls(polls.slice(0, 10));
+                setActivePage(1);
+                let items = [];
+                let length = 0
+                polls.length % 10 === 0 ? length = polls.length / 10 : length = (polls.length / 10) + 1
+                for (let number = 1; number <= length; number++) {
+                    items.push(
+                        number
+                    );
+                }
+                setPaginationCounter(items);
                 setError("");
             }
 
             else setError("Failed to reach server")
         });
     }, []);
-    const handleSearchButtonClicked=()=>{
-        if(searchAttribute!==""&& searchBy!=="Search By"){
+
+    const handlePaginationClick = (number) => {
+        console.log(number);
+        setActivePage(number);
+
+        setPagePolls(polls.slice((number - 1) * 10, number * 10));
+    }
+    const handleSearchButtonClicked = () => {
+        if (searchAttribute !== "" && searchBy !== "Search By") {
             //call the search api
         }
     }
     const handleSearchBySelect = (e) => {
         setSearchBy(e)
     }
-    const handleSearchAttributeChange = (e)=>{
+    const handleSearchAttributeChange = (e) => {
         setSearchAttribute(e.target.value)
     }
 
@@ -55,7 +76,17 @@ const HomePage = () => {
                     />
                 </InputGroup>
             </Container>
-            <PollList polls={polls} />
+            <PollList polls={pagePolls} />
+            <Container className="w-50 mt-5" >
+                <Pagination>
+                    {paginationCounter.map((number) =>
+                        <Pagination.Item key={number} active={number === activePage} onClick={() => handlePaginationClick(number)}>
+                            {number}
+                        </Pagination.Item>,
+                    )
+                    }
+                </Pagination>
+            </Container>
             <h1>{error}</h1>
         </div>
     )
