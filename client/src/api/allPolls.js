@@ -21,15 +21,14 @@ export const getAllPolls = () => {
  * @param {string} searchAttribute Text to be searched for
  * @return {Object} List of public polls that match the query, and total number of polls that match 
  */
-export const getPolls = (pageNumber = 1, searchBy, searchAttribute) => {
+export const getPolls = ( searchBy, searchAttribute,pageNumber = 1) => {
   var requestOptions = {
     method: "GET",
     redirect: "follow",
   };
 
 
-  return fetch(apiURL, requestOptions)
+  return fetch(apiURL + `?pageNumber=${pageNumber}&searchBy=${searchBy}&searchAttribute=${searchAttribute}`, requestOptions)
     .then((response) => response.json())
-    .then(res => res.polls)
     .catch(() => alert("Failed to reach the server, Please try again later"));
 };

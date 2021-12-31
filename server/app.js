@@ -77,9 +77,10 @@ app.use('/vote', passport.authenticate('jwt', { session: false }), voteRouter);
  * 
  */
 app.get('/', async (req, res) => {
-  console.log(req.query);
-  if (req.query.searchBy !== 'title' && req.query.searchBy !== 'author') {
+  if (req.query.searchBy != 'null' && req.query.searchBy !== 'title' && req.query.searchBy !== 'author') {
     res.status(400).send("searchBy not allowed")
+    console.log("not allowed")
+    console.log(req.query.searchBy)
     return
   }
 
@@ -126,6 +127,25 @@ app.get('/', async (req, res) => {
     return
 
   }
+  
+    const polls = await Poll.find({
+      public: true,
+    })
+      .populate('postedBy', { _id: 1, display_name: 1, 'local.email': 1 })
+      .skip((pageNumber - 1) * 10)
+      .limit(10)
+      const allPolls = await Poll.find({
+        public: true,
+      })
+        .populate('postedBy', { _id: 1, display_name: 1, 'local.email': 1 })
+        .skip((pageNumber - 1) * 10)
+
+    res.status(200).json({
+      polls: polls,
+      count: allPolls.length
+    });
+    return
+  
 
   res.status(500).send("Adel?")
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllPolls } from "../api/allPolls";
+import { getAllPolls, getPolls } from "../api/allPolls";
 import PollList from "./PollList";
 import { Pagination, Button, InputGroup, FormControl, Container, Dropdown } from "react-bootstrap"
 const HomePage = () => {
@@ -11,14 +11,16 @@ const HomePage = () => {
     const [searchBy, setSearchBy] = useState('Search By');
     const [searchAttribute, setSearchAttribute] = useState("")
     useEffect(() => {
-        getAllPolls().then((polls) => {
+        getPolls(null).then((response) => {
             if (polls) {
-                setPolls(polls);
-                setPagePolls(polls.slice(0, 10));
+                console.log(response.count);
+                setPolls(response.polls);
+                setPagePolls(response.polls);
                 setActivePage(1);
+
                 let items = [];
                 let length = 0
-                polls.length % 10 === 0 ? length = polls.length / 10 : length = (polls.length / 10) + 1
+                response.count % 10 === 0 ? length = response.count / 10 : length = (response.count / 10) + 1
                 for (let number = 1; number <= length; number++) {
                     items.push(
                         number
@@ -35,12 +37,35 @@ const HomePage = () => {
     const handlePaginationClick = (number) => {
         console.log(number);
         setActivePage(number);
-
-        setPagePolls(polls.slice((number - 1) * 10, number * 10));
-    }
+        getPolls(null,null,number).then((response) => {
+            if (response.polls) {
+                console.log(response.count);
+                setPolls(response.polls);
+                setPagePolls(response.polls);
+                }
+    })
+}
     const handleSearchButtonClicked = () => {
         if (searchAttribute !== "" && searchBy !== "Search By") {
             //call the search api
+            getPolls(searchBy,searchAttribute).then((response)=>{
+                if (response.polls) {
+                    setPolls(response.polls);
+                    setPagePolls(response.polls);
+                    setActivePage(1);
+                    let items = [];
+                    let length = 0
+                    response.count % 10 === 0 ? length = response.count / 10 : length = (response.count / 10) + 1
+                    for (let number = 1; number <= length; number++) {
+                        items.push(
+                            number
+                        );
+                    }
+                
+                    setPaginationCounter(items);
+                }
+
+            });
         }
     }
     const handleSearchBySelect = (e) => {
@@ -61,8 +86,8 @@ const HomePage = () => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
-                            <Dropdown.Item eventKey="Title">Title</Dropdown.Item>
-                            <Dropdown.Item eventKey="Author">Author</Dropdown.Item>
+                            <Dropdown.Item eventKey="title">Title</Dropdown.Item>
+                            <Dropdown.Item eventKey="author">Author</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
                     <Button variant="outline-secondary" id="searchButton" onClick={handleSearchButtonClicked}>
