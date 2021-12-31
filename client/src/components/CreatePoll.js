@@ -123,7 +123,7 @@ const CreatePoll = () => {
                                 : <></>
                         }
 
-                    </Form.Group>
+                    </Form.Group> 
 
                     <Button variant="primary" type="submit" onClick={handleCreateClicked} disabled={!validData}>
                         Create
