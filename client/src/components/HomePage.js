@@ -56,7 +56,7 @@ const HomePage = () => {
             <Container className="w-50 mt-5">
                 <InputGroup className="mb-3">
                     <Dropdown onSelect={handleSearchBySelect}>
-                        <Dropdown.Toggle variant="secondary" id="searchBy"  >
+                        <Dropdown.Toggle variant="secondary" id="searchBy">
                             {searchBy}
                         </Dropdown.Toggle>
 
@@ -78,7 +78,7 @@ const HomePage = () => {
             </Container>
             <PollList polls={pagePolls} />
             <Container className="w-50 mt-5" >
-                <Pagination>
+                <Pagination className="justify-content-center">
                     {paginationCounter.map((number) =>
                         <Pagination.Item key={number} active={number === activePage} onClick={() => handlePaginationClick(number)}>
                             {number}

@@ -6,6 +6,28 @@ export const getAllPolls = () => {
     redirect: "follow",
   };
 
+  // localhost:5000?page=2&searchBy=title/author&searchText=example
+
+
+  return fetch(apiURL, requestOptions)
+    .then((response) => response.json())
+    .then(res => res.polls)
+    .catch(() => alert("Failed to reach the server, Please try again later"));
+};
+
+/**
+ * @param {number} pageNumber if not provided: default is page no 1
+ * @param {string} searchBy accepted strings: title or author
+ * @param {string} searchAttribute Text to be searched for
+ * @return {Object} List of public polls that match the query, and total number of polls that match 
+ */
+export const getPolls = (pageNumber = 1, searchBy, searchAttribute) => {
+  var requestOptions = {
+    method: "GET",
+    redirect: "follow",
+  };
+
+
   return fetch(apiURL, requestOptions)
     .then((response) => response.json())
     .then(res => res.polls)
