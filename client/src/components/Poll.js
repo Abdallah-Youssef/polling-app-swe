@@ -31,17 +31,24 @@ const Poll = () => {
 
     const vote = async (index) => {
         console.log(index + " - " + poll.voted)
-        if (poll.voted !== undefined) {
-            alert("you have alrady voted!")
-            return;
-        }
 
         let newPoll = Object.assign({}, poll);
-        newPoll.voted = index;
-
-        let status = await submitChoice(poll._id, index, poll.public);
+        
+        /**
+         * Wow, the front-end and the back-end have totally different ideas
+         * of what "public" means in this request
+         */
+        let changing = poll.voted !== undefined;
+        let status = await submitChoice(poll._id, 
+                                        index,
+                                        poll.public,
+                                        changing);
         console.log(status)
         if (status) {
+            if (changing){
+                newPoll.choices[newPoll.voted].count--;
+            }
+        
             newPoll.voted = index;
             newPoll.choices[index].count++;
             setPoll(newPoll)
