@@ -52,7 +52,7 @@ const Poll = () => {
     }
 
     return (
-        <Container className='py-5 mt-5 w-50 border border-dark rounded'>
+        <Container className='py-3 mt-5 w-50 border border-dark rounded'>
             {
                 poll.question ?
                     <>
@@ -60,9 +60,16 @@ const Poll = () => {
 
 
                         <h1 className='display-2 text-center'> {poll.question}  </h1>
-                        <Link to={`/user/${author.id}`}>
-                            <h4 className='opacity-50 text-center'>{author.email}</h4>
-                        </Link>
+
+                        <div className='text-center'>
+                            Posted on: {poll.createdOn}
+                            <br />
+                            Author:&nbsp;  
+                            <Link to={`/user/${author.id}`}>
+                                <h5 className='d-inline opacity-50'>{author.email}</h5>
+                            </Link>
+                        </div>
+
 
 
                         <br></br>
