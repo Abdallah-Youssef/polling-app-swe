@@ -46,12 +46,24 @@ userRouter.post('/updateDisplayName', async (req, res) => {
     }
 });
 
+
 /**
- * @api {get} /user/polls Get all user polls
+ * Responds with the user's public and private polls 
+ * if they are the one sending the request
+ * or only the public ones if anybody else.
+ * Response format: [{
+ *      createdOn: Date
+ *      question: string
+ *      public: boolean
+ *      choices: string[]  
+ * }]
+ * 
+ * @api {get} /user/polls/:userId? Get all public user polls if the requesting user is not the 
+ * requested user, or all public and private polls if the same person
  * @apiName GetUserPolls
  * @apiGroup User
  *
- * @apiQuery {String} userId Id of user
+ * @apiParameter {String} userId Id of user
  * 
  * @apiSuccess {Poll[]} Body User's polls
  * @apiSuccess {String} postedBy Author info
@@ -61,15 +73,30 @@ userRouter.post('/updateDisplayName', async (req, res) => {
  * 
  * 
  * @apiParamExample Request-Example:
- * user/polls?userId=61c212e078743f401426e042
+ * user/polls/61c212e078743f401426e042
  */
-userRouter.get('/polls', async (req, res) => {
-    let id = req.query.userId;
-    const polls = await Poll.find({postedBy: id})
-    .populate('postedBy',{_id:1, display_name: 1, 'local.email': 1});
+userRouter.get('/polls/:userId', async (req, res) => {
+    let requesting_user = req.user._id;
+    let requested_user;
+    if (req.params.userId)
+        requested_user = req.params.userId;
+    else
+        requested_user = requesting_user;
+        
+    let filter = {postedBy: requested_user};
 
+    if (requesting_user != requested_user){
+        filter['public'] = true;
+        console.log("The requester is not the creator");
+    }
+    //console.log(id)
+
+    const polls = await Poll.find(filter)
+    .populate('postedBy',{_id:1, display_name: 1, 'local.email': 1});;
+    console.log(polls)
     res.send(polls.reverse())
 });
+
 
 
 /**

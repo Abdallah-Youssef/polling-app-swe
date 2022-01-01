@@ -11,6 +11,7 @@ const Poll = require('./models/poll_schema');
 const Vote = require('./models/vote_schema');
 const config = require('config')
 
+mongoose.set('useFindAndModify', false);
 mongoose.connect(
     config.get('DBHost'),
   {
@@ -57,7 +58,7 @@ app.use(
 );
 
 
-app.use('/vote', passport.authenticate('jwt', {session: false}), voteRouter);
+app.use('/votes', passport.authenticate('jwt', {session: false}), voteRouter);
 
 /**
  * Home page, all polls, no need for authentication
@@ -67,15 +68,22 @@ app.get('/', async (req, res)=>{
     const polls = await Poll.find({public: true})
     .populate('postedBy',
      {_id:1, display_name: 1, 'local.email': 1});
-
     res.status(200).json({polls: polls.reverse()});
 });
 
 
 /**
- * The sharing ID
+ * View the details of a particular poll
+ * response format:
+ * {
+ *      postedBy: {display_name : (string)}
+ *      createdOn: Date
+ *      question: string
+ *      public: boolean
+ *      choices: string[] 
+ * }
  */
-app.get('/shared_poll/:pollId', async (req, res) =>{
+app.get('/poll/:pollId', async (req, res) =>{
     const poll = await Poll.findById(req.params.pollId);
     await poll.populate('postedBy', {_id: 0, display_name: 1}).execPopulate();
     res.send(poll);

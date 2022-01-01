@@ -2,9 +2,6 @@ const express = require('express');
 const pollRouter = express.Router();
 const Poll = require('../models/poll_schema');
 const Vote = require('../models/vote_schema');
-const poll_helpers = require('../helpers/poll_helpers');
-const User = require('../models/user_schema');
-
 
 /**
  * Request Format
@@ -14,7 +11,7 @@ const User = require('../models/user_schema');
  *     choices: string[]
  * }
  */
-pollRouter.post('/createPoll', async (req, res)=>{
+pollRouter.post('/create', async (req, res)=>{
     try
     {
         const pollData = {
@@ -58,13 +55,17 @@ pollRouter.delete('/deletePost', async (req, res) => {
 });
 */
 
-
+/**
+ * checks if the user issuing the request is the creator
+ * or a voter
+ */
 async function isAuthorized(req, res, next){
-    const poll = await Poll.findById(req.body.id);
+    //console.log(req.params.pollId);
+    const poll = await Poll.findById(req.params.pollId);
     const votes = await Vote.find({poll: poll.id});
     const voters = votes.map(v => v.user.toString());
     if (req.user.id == poll.postedBy.toString() 
-        || voters.includes(req.user.id.toString())){
+        || voters.includes(req.user.id)){
 
             req.votes = votes;
             next();
@@ -74,44 +75,30 @@ async function isAuthorized(req, res, next){
     }
 }
 
-/** Checks if the user has voted or has created the poll
- * needs the poll id in the body
- * then returns an array {{choice, voter name (if the vote is public)}}
+
+/**
+ * If the user is authorized to see the results (voter or creator)
+ * it returns the results in the format
+ *   {
+ *      choices : [{
+ *          text: string,
+ *          count: Number
+ *      }]
+ *   }
  */
-pollRouter.get('/getPollResults', isAuthorized, async (req, res) => {
-    try
-    {
-        /// ?????????????????????????????
-        const results = await poll_helpers.getResults(req.votes);
-        console.log(results);
-        return res.json({status: 'success', results: results});
-    }catch(error)
-    {
-        console.log('Error in delete post: ' + error);
-        return res.json({status: 'error'});
-    }
+pollRouter.get('/results/:pollId', isAuthorized, async (req, res) => { 
+    var poll = await Poll.findById(req.params.pollId);
+    //console.log(`\n\nRequesting the poll ${poll}`);
+    const summary = await poll.getResultSummary();
+    //console.log(`Summary is ${JSON.stringify(summary)}`);
+
+    res.send(summary);
 });
 
 
-/**
- * We need this path for private (and public) posts
- */
-pollRouter.get('/getUserPolls', async (req, res) => {
-    try
-    {
-        const polls = await Poll.find({postedBy: req.body.id});
-        console.log(polls);
-        return res.json({status: 'success', polls: polls});
-    }catch(error)
-    {
-        console.log('Error in delete post: ' + error);
-        return res.json({status: 'error'});
-    }
-});
-
 
 /**
- * @api {get} /polls/:pollId Get poll data
+ * @api {get} /polls/:pollId Get poll data along with user's vote, if any
  * @apiName GetPoll
  * @apiGroup Polls
  *
@@ -127,11 +114,11 @@ pollRouter.get('/getUserPolls', async (req, res) => {
  * 
  */
 pollRouter.get('/:pollId', async (req, res) => { 
-    const poll = await Poll.findById(req.params.pollId)
+    const poll = await Poll.findById(req.params.pollId);
+    await poll.populate('postedBy').execPopulate();
     const userId = req.user.id
     
-    const authorId = poll.postedBy
-    const author = await User.findById(authorId)
+    const author = poll.postedBy;
     
     const votes = await Vote.find({poll: req.params.pollId});
     let choices = new Array(poll.choices.length);
@@ -162,9 +149,19 @@ pollRouter.get('/:pollId', async (req, res) => {
             id: author._id
         }
     });
-})
+});
 
 
+
+/**
+ * Returns the choice this user has voted for if the poll is not anonymous
+ * .. just a number
+ */
+pollRouter.get('/:pollId/vote/:userId', async (req, res) => {
+    //TODO anonymous
+    let vote = await Vote.find({user: req.params.userId, poll: req.params.pollId});
+    res.send(vote.choice);
+});
   
 
 module.exports = pollRouter;

@@ -2,15 +2,14 @@ const assert = require('assert')
 const Poll = require('../models/poll_schema')
 const User = require('../models/user_schema')
 const Vote = require('../models/vote_schema')
-const vote_helper = require('../helpers/vote_helpers')
-const poll_helpers = require('../helpers/poll_helpers')
 
 
+let dummy_user, tummy_user, yummy_user;
 
 describe('stores an instance of everything', function(){
 
     it('correctly stores users', async function(){
-        const user = new User({
+        dummy_user = new User({
             display_name: 'dummy_user', 
             login_method: 'local',
             local: {
@@ -19,8 +18,8 @@ describe('stores an instance of everything', function(){
             }
         });
 
-        await user.save();
-        assert(!user.isNew);
+        await dummy_user.save();
+        assert(!dummy_user.isNew);
     });
 
 
@@ -112,10 +111,9 @@ describe('basic validation', function(){
 describe('handles votes correctly', function(){
 
     let poll;
-    let second_user;
 
     it('rejects duplicate votes', async function(){
-        second_user = new User({
+        yummy_user = new User({
             display_name: 'yummy_user', 
             login_method: 'local',
             local: {
@@ -123,25 +121,25 @@ describe('handles votes correctly', function(){
                 password: 'hi;k'
             }
         });
-        await second_user.save();
+        await yummy_user.save();
     
         poll = await Poll.findOne({
             question: "what are you?"
         });
 
         const first_vote = {
-            user: second_user.id,
+            user: yummy_user.id,
             poll: poll.id,
             choice: 1
         };
-        await assert.doesNotReject(vote_helper(first_vote));
+        await assert.doesNotReject(Poll.submitVote(first_vote));
 
         const second_vote = {
-            user: second_user.id,
+            user: yummy_user.id,
             poll: poll.id,
             choice: 0
         };        
-        await assert.rejects(vote_helper(second_vote),{
+        await assert.rejects(Poll.submitVote(second_vote),{
             name: 'Error',
             message: 'This user has already voted in this poll'
         });
@@ -164,21 +162,23 @@ describe('handles votes correctly', function(){
             choice: 1,
             public: false
         };
-        await vote_helper(private_vote);
+        await Poll.submitVote(private_vote);
 
-        const votes = await Vote.find({poll: poll.id});
+        const results = await poll.getResultSummary();
 
-        const results = await poll_helpers.getResults(votes);
-
-        const expected = [
+        /*const expected = [
             {choice: 0, voter: 'dummy_user'},
             {choice: 1, voter: 'yummy_user'},
             {choice: 1}
         ];
 
-        assert.deepStrictEqual(results, expected);
+        assert.deepStrictEqual(results, expected);*/
+
+        assert.equal(results.choices[0].count, 1);
+        assert.equal(results.choices[1].count, 2);
     });
 
+    
     it('excludes non-voters correctly', async function(){
         let fourth_user  = new User({
             display_name: 'nummy_user', 
@@ -193,12 +193,27 @@ describe('handles votes correctly', function(){
         const votes = await Vote.find({poll: poll.id});
         const voters = votes.map(v => v.user.toString());
 
-        console.log(voters);
-        console.log(second_user.id);
+        //console.log(voters);
+        //console.log(second_user.id);
 
         assert(!voters.includes(fourth_user.id.toString()));
-        assert(voters.includes(second_user.id.toString()));
-    })
+        assert(voters.includes(yummy_user.id.toString()));
+    });
+
+    it('changes votes correctly', async function(){
+        const changed_vote = {
+            user: yummy_user.id,
+            poll: poll.id,
+            choice: 0
+        };
+
+        await assert.doesNotReject(Poll.changeVote(changed_vote));
+
+        const results = await poll.getResultSummary();
+
+        assert.equal(results.choices[0].count, 2);
+        assert.equal(results.choices[1].count, 1);
+    });
 
 });
 
