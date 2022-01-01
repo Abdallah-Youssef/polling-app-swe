@@ -26,7 +26,7 @@ const ShareBar = ({ content }) => {
             </Button>
 
             <Button className='d-flex align-items-center mx-2' style={{ backgroundColor: "#25D366", borderColor: "white" }} onClick={handleWhatsapp}>
-                <BsWhatsapp className='mx-1' />WhatAapp
+                <BsWhatsapp className='mx-1' />WhatsApp
             </Button>
 
             <Button className='d-flex align-items-center' style={{ backgroundColor: "#1DA1F2", borderColor: "white" }} onClick={handleTwitter}>
