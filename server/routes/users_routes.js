@@ -73,9 +73,9 @@ userRouter.post('/updateDisplayName', async (req, res) => {
  * 
  * 
  * @apiParamExample Request-Example:
- * user/polls?userId=61c212e078743f401426e042
+ * user/polls/61c212e078743f401426e042
  */
-userRouter.get('/polls/:userId?', async (req, res) => {
+userRouter.get('/polls/:userId', async (req, res) => {
     let requesting_user = req.user._id;
     let requested_user;
     if (req.params.userId)
