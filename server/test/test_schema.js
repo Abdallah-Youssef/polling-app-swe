@@ -4,7 +4,7 @@ const User = require('../models/user_schema')
 const Vote = require('../models/vote_schema')
 
 
-let dummy_user, tummy_user, yummy_user;
+let dummy_user, tummy_user, yummy_user, nummy_user;
 
 describe('stores an instance of everything', function(){
 
@@ -180,7 +180,7 @@ describe('handles votes correctly', function(){
 
     
     it('excludes non-voters correctly', async function(){
-        let fourth_user  = new User({
+        nummy_user  = new User({
             display_name: 'nummy_user', 
             login_method: 'local',
             local: {
@@ -188,7 +188,7 @@ describe('handles votes correctly', function(){
                 password: 'hi;k'
             }
         });
-        await fourth_user.save();
+        await nummy_user.save();
 
         const votes = await Vote.find({poll: poll.id});
         const voters = votes.map(v => v.user.toString());
@@ -196,7 +196,7 @@ describe('handles votes correctly', function(){
         //console.log(voters);
         //console.log(second_user.id);
 
-        assert(!voters.includes(fourth_user.id.toString()));
+        assert(!voters.includes(nummy_user.id.toString()));
         assert(voters.includes(yummy_user.id.toString()));
     });
 
@@ -207,7 +207,14 @@ describe('handles votes correctly', function(){
             choice: 0
         };
 
+        const invalid_change = {
+            user: nummy_user.id,
+            poll: poll.id,
+            choice: 0
+        };
+
         await assert.doesNotReject(Poll.changeVote(changed_vote));
+        await assert.rejects(Poll.changeVote(invalid_change));
 
         const results = await poll.getResultSummary();
 

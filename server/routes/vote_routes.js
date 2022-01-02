@@ -25,7 +25,6 @@ voteRouter.post('/submit', async (req, res)=>{
             public: req.body.public
         };
 
-
         if(!voteData.poll)
             throw new Error('Poll not found in request');
 
@@ -40,7 +39,6 @@ voteRouter.post('/submit', async (req, res)=>{
 
 
 /**
- * A user can submit a vote only once and cannot change it.
  * In the body, send the poll id, the choice and (optionally) 
  * whether the vote is public or private (default is public)
  * format:

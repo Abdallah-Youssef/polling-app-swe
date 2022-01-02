@@ -27,9 +27,15 @@ const VoteSchema = new Schema({
     public: {type: Boolean, default: true}
 });
 
-/*VoteSchema.pre('save', function(){
-    console.log(`saving vote ${this}..`)
-});*/
+VoteSchema.pre('save', async function(){
+    const existingVote = await this.constructor.findOne({
+        user: this.user, 
+        poll: this.poll
+    });
+
+    if (existingVote)
+        throw new Error('This user has already voted in this poll');
+});
 
 const Vote = mongoose.model('Vote', VoteSchema);
 

@@ -38,20 +38,8 @@ const PollSchema = new Schema({
  * Else associate the vote with the user
  */
 PollSchema.static('submitVote', async function(voteData){
-
-    const existingVote = await Vote.findOne({
-        user: voteData.user, 
-        poll: voteData.poll
-    })// .exec();
-
-    if (existingVote)
-        throw new Error('This user has already voted in this poll');
-
     let saveVote = new Vote(voteData);
-    
-
     await saveVote.save();
-
 });
 
 
@@ -60,10 +48,12 @@ PollSchema.static('submitVote', async function(voteData){
  */
 PollSchema.static('changeVote', async function(newVoteData){
     // TODO anonymous
-    await Vote.findOneAndUpdate({
-        user: newVoteData.user,
-        poll: newVoteData.poll
-    }, {$set: {'choice' : newVoteData.choice}});
+    const exiting_vote = await Vote.findOneAndUpdate({
+                            user: newVoteData.user,
+                            poll: newVoteData.poll
+                        }, {$set: {'choice' : newVoteData.choice}});
+    if (!exiting_vote)
+        throw new Error("This user has not voted in this poll");
 });
 
 
