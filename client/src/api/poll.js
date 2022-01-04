@@ -105,7 +105,6 @@ export const createPoll = (title, Private, options, Photo) => {
 
     return fetch(apiURL + "/polls/create", requestOptions)
         .then(response => response.json())
-        .then(result => result.id)
         .catch(error => console.log('error', error));
 }
 

@@ -1,9 +1,26 @@
 const express = require('express');
 const pollRouter = express.Router();
 const Poll = require('../models/poll_schema');
+const User = require('../models/user_schema')
 const Vote = require('../models/vote_schema');
 const { photoUpload } = require('../initDB');
 const { downloadPhoto } = require('../utils');
+
+
+const DEBUG_FUNC = (req, res, next) => {
+    console.log(req.body);
+    next();
+};
+
+async function checkEmailVerification(req, res, next){
+  // Check if user is verified
+    const user = await User.findOne({_id: req.user.id})
+    console.log(user)
+    if (!user.verified){
+        return res.json({error: "Please Verify your email"})
+    }
+    next();
+}
 
 /**
  * Request Format
@@ -13,15 +30,7 @@ const { downloadPhoto } = require('../utils');
  *     choices: string[]
  * }
  */
-
-
- const DEBUG_FUNC = (req, res, next) => {
-    console.log(req.body);
-    next();
-};
-
-
-pollRouter.post('/create', photoUpload.single('photo'), async (req, res)=>{
+pollRouter.post('/create', checkEmailVerification, photoUpload.single('photo'), async (req, res)=>{
     try
     {
         const pollData = {
@@ -30,20 +39,20 @@ pollRouter.post('/create', photoUpload.single('photo'), async (req, res)=>{
             question: req.body.question,
             public: req.body.public,
             choices: req.body.choices.split(','),
-            photoID: req.file.id
         };
+
+        if(req.file)
+            pollData.photoID = req.file.id;
 
         console.log(pollData);
 
-        if(req.body.photoURL)
-            pollData.photoURL = req.body.photoURL;
         const newPost = new Poll(pollData);
         await newPost.save();
         return res.json({status: 'success', id: newPost._id});
     }catch(error)
     {
         console.log('Error in send post: ' + error);
-        return res.json({status: 'error'});
+        return res.json({error: 'error'});
     }
 });
 
