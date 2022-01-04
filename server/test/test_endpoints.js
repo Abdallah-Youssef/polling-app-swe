@@ -3,20 +3,27 @@ const chaiHttp = require('chai-http');
 const app = require('../app');
 const assert = require('assert')
 const User = require('../models/user_schema')
+const Poll = require('../models/poll_schema')
+
 const bcrypt = require('bcryptjs');
 
 chai.use(chaiHttp);
+const adel = {
+    email: "adel@shakal.com",
+    password: "Password@1"
+}
+
+const mohamed = {
+    email: "mohamed@salah.com",
+    password: "Password@1"
+}
 
 describe('Authentication', () => {
-    const adel = {
-        email: "adel@shakal.com",
-        password: "Password@1"
-    }
 
-    let token;
 
     it('Create account', (done) => {
 
+        // Create adel
         chai.request(app)
             .post('/userAuth/signup')
             .set('content-type', 'application/json')
@@ -24,43 +31,213 @@ describe('Authentication', () => {
             .end(async (err, res) => {
                 // Expect a token and user id
                 assert(res.body.token)
-                token = res.body.token; //save token for later tests
                 assert(res.body.user.id)
 
                 const user = await User.findOne({
                     _id: res.body.user.id
                 });
 
+
                 assert(user.local.email === adel.email)
                 assert(await bcrypt.compare(adel.password, user.local.password))
+                adel.id = user._id
+
                 done();
+            });
+
+        // Create mohamed
+        chai.request(app)
+            .post('/userAuth/signup')
+            .set('content-type', 'application/json')
+            .send(JSON.stringify(mohamed))
+            .end(async (err, res) => {
+                mohamed.id = res.body.user.id
             });
     });
 
-    
-    /*it('Create Poll', (done)=>{
-        /*chai.request(app)
-            .post('/polls/createPoll')
-            .set('content-type', 'application/json')
-            .send(JSON.stringify(adel))
+
+    it('Sign in using local method', (done) => {
+        chai.request(app)
+        .post('/userAuth/login')
+        .set('content-type', 'application/json')
+        .send(JSON.stringify({
+            email: adel.email,
+            password: adel.password
+        }))
+        .end(async (err, res) => {
+            // Expect a token and user id
+            assert(res.body.token)
+            assert(res.body.user.id)
+
+            adel.token = res.body.token
+
+            done();
+        });
+    })
+
+});
+
+describe('Queries on Polls', () => {
+
+    before(async () => {
+        // Create some test polls 21 total
+        // first 2 private, last 19 are public
+        // first 15 by adel, remaining by mohamed
+
+        for (let i = 0; i < 21; i++) {
+            const pollData = {
+                postedBy: i < 15 ? adel.id : mohamed.id,
+                createdOn: new Date().getTime(),
+                question: i < 10 ? "Less" : "Greater",
+                public: i >= 2,
+                choices: ["Choice 1", "Choice 2"]
+            };
+
+            const newPost = new Poll(pollData);
+            await newPost.save();
+        }
+
+    })
+
+    it("Handles invalid searchBy types", (done) => {
+        chai.request(app)
+            .get('/?searchBy=hamada')
             .end(async (err, res) => {
-                // Expect a token and user id
-                assert(res.body.token)
-                token = res.body.token; //save token for later tests
-                assert(res.body.user.id)
+                assert(res.status === 400)
+                assert(res.body.error)
+                done()
+            });
+    })
 
-                const user = await User.findOne({
-                    _id: res.body.user.id
+    it("Handles invalid pageNumber", (done) => {
+        chai.request(app)
+            .get('/?pageNumber=-1')
+            .end(async (err, res) => {
+                assert(res.status === 400)
+                assert(res.body.error)
+                done()
+            });
+    })
+
+    it("Behaves normally for empty query", (done) => {
+        chai.request(app)
+            .get('/')
+            .end(async (err, res) => {
+                assert(res.status === 200)
+                assert(res.body.polls.length === 10)
+
+                // only 19 polls are public
+                assert(res.body.count === 19)
+                done()
+            });
+    })
+
+    describe("pageNumber", () => {
+        it("Behaves normally for pageNumber query", (done) => {
+            chai.request(app)
+                .get('/?pageNumber=2')
+                .end(async (err, res) => {
+                    assert(res.status === 200)
+                    assert(res.body.polls.length === 9)
+                    assert(res.body.count === 19)
+                    done()
                 });
+        })
 
-                assert(user.local.email === adel.email)
-                assert(await bcrypt.compare(adel.password, user.local.password))
-                done();
-            }); dude what a waste of time
-    });*/
+        it("Handles out of range pageNumber", (done) => {
+            chai.request(app)
+                .get('/?pageNumber=3')
+                .end(async (err, res) => {
+                    assert(res.status === 200)
+                    assert(res.body.polls.length === 0)
+                    assert(res.body.count === 19)
+                    done()
+                });
+        })
 
-});
+    })
 
-describe( 'Authorization', () =>{
-    // const dummy_user = 
-});
+    describe('searchBy author', () => {
+        it("Handles searchBy Author mohamed correctly", (done) => {
+            chai.request(app)
+                .get('/?searchBy=author&searchAttribute=mohamed')
+                .end(async (err, res) => {
+                    assert(res.status === 200)
+                    assert(res.body.polls.length === 6)
+                    assert(res.body.count === 6)
+                    done()
+                });
+        })
+        it("Handles searchBy Author adel correctly", (done) => {
+            chai.request(app)
+                .get('/?searchBy=author&searchAttribute=adel')
+                .end(async (err, res) => {
+                    assert(res.status === 200)
+
+                    assert(res.body.polls.length === 10)
+
+                    // adel has 13 public polls
+                    assert(res.body.count === 13)
+                    done()
+                });
+        })
+
+        it("Handles pagination Author adel correctly", (done) => {
+            chai.request(app)
+                .get('/?pageNumber=2&searchBy=author&searchAttribute=adel')
+                .end(async (err, res) => {
+                    assert(res.status === 200)
+
+                    assert(res.body.polls.length === 3)
+
+                    // adel has 13 public polls
+                    assert(res.body.count === 13)
+                    done()
+                });
+        })
+
+    })
+
+
+
+
+    describe("searchBy title", (done) => {
+
+        it("'Less' polls", (done) => {
+            chai.request(app)
+                .get('/?searchBy=title&searchAttribute=less')
+                .end(async (err, res) => {
+                    assert(res.status === 200)
+
+
+                    // The first ten polls have title "Less", the first two are public
+                    assert(res.body.polls.length === 8)
+                    assert(res.body.count === 8)
+                    done()
+                });
+        })
+
+        it("'Greater' polls", (done) => {
+            chai.request(app)
+                .get('/?searchBy=title&searchAttribute=greater')
+                .end(async (err, res) => {
+                    assert(res.status === 200)
+                    assert(res.body.polls.length === 10)
+                    assert(res.body.count === 11)
+                    done()
+                });
+        })
+
+        it("'Greater' polls pagination", (done) => {
+            chai.request(app)
+                .get('/?pageNumber=2&searchBy=title&searchAttribute=greater')
+                .end(async (err, res) => {
+                    assert(res.status === 200)
+                    assert(res.body.polls.length === 1)
+                    assert(res.body.count === 11)
+                    done()
+                });
+        })
+    })
+
+})

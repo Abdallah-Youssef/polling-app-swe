@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getPoll, submitChoice } from "../api/poll";
-import { ListGroup, Badge, Container, Row, Col, Button } from "react-bootstrap";
+import { ListGroup, Badge, Container, Row, Col } from "react-bootstrap";
 import Loading from './Loading';
 import ShareBar from './ShareBar';
 const Poll = () => {

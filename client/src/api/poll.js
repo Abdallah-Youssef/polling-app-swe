@@ -1,5 +1,6 @@
 import { apiURL } from "./url";
 
+
 export const getPoll = (pollId) => {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", localStorage.getItem("token"))
@@ -81,7 +82,7 @@ export const createPoll = (title, Private, options) => {
 /**
  * 
  * @param {string} userId 
- * @returns {Array.<Poll>} on success, array of polls posted by userId
+ * @returns {Poll[]} on success, array of polls posted by userId
  */
 export const getUserPolls = (userId) => {
     const requestOptions = {

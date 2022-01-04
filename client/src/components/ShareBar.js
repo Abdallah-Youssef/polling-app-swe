@@ -8,7 +8,6 @@ const ShareBar = ({ content }) => {
 
 
     const handleWhatsapp = () => {
-        const message = "Check out this "
         window.open(`https://api.whatsapp.com/send/?phone&text=${content + ": " + currentURL}`, '_blank').focus();
     }
     const handleTwitter = () => {
@@ -16,7 +15,7 @@ const ShareBar = ({ content }) => {
     }
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(content + ": " + currentURL);
+        navigator.clipboard.writeText(currentURL.href);
     }
 
     return (
