@@ -16,8 +16,16 @@ export const getPoll = (pollId) => {
         .catch(() => alert("Failed to reach the server, Please try again later"));
 };
 
-
-export const submitChoice = (pollId, choiceIndex, isPublic) => {
+/**
+ * 
+ * @param {string} pollId 
+ * @param {Number} choiceIndex 
+ * @param {Boolean} isPublic whether the user allows his name 
+ * to be shown to the public with the vote
+ * @param {Boolean} changing has the user already voted and wants to change the vote?
+ * @returns on success, true
+ */
+export const submitChoice = (pollId, choiceIndex, isPublic, changing) => {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", localStorage.getItem("token"))
     myHeaders.append("Content-Type", "application/json");
@@ -39,7 +47,13 @@ export const submitChoice = (pollId, choiceIndex, isPublic) => {
     body: raw
   };
 
-  return fetch(apiURL + "/votes/submit", requestOptions) 
+  let path = "/votes";
+  if (changing)
+    path += "/change";
+  else
+    path += "/submit";
+
+  return fetch(apiURL + path, requestOptions) 
     .then(async (response) => {
       let statusObject = await response.json();
       console.log(statusObject)
