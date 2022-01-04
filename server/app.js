@@ -14,23 +14,6 @@ const User = require('./models/user_schema');
 const VerificationLink = require('./models/verification_link_schema')
 const config = require('config')
 
-mongoose.set('useFindAndModify', false);
-mongoose.connect(
-    config.get('DBHost'),
-    {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        user: config.get('DBuserName'),
-        pass: config.get('DBpass')
-    },
-    (err) => {
-        if (err) {
-            console.error(err);
-            throw new Error("Error Connecting to Database");
-        }
-        console.log("Connected to DB " + config.get('DBHost'))
-    }
-);
 
 const app = express();
 app.use(express.json());
