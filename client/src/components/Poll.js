@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getPoll, submitChoice } from "../api/poll";
-import { ListGroup, Badge, Container, Row, Col } from "react-bootstrap";
+import { ListGroup, Badge, Container, Row, Col, Image } from "react-bootstrap";
 import { Doughnut } from 'react-chartjs-2';
 import { Chart } from 'chart.js/auto'
 import { randomColor } from 'randomcolor'
@@ -138,9 +138,17 @@ const Poll = () => {
                                 ))
                             }
                         </ListGroup>
-                        {poll.photo && <img src={poll.photo} width='300px'  />}
-                        <ShareBar content={poll.question}/>
+                        {poll.photo &&
+
+                            <div className='w-100 d-flex flex-column justify-content-center my-3'>    
+                                 <Image src={poll.photo} fluid rounded />
+                            </div>
                          
+                         }
+
+                        <hr/>
+                        <ShareBar content={poll.question}/>
+                        <hr/>
                         <div>{
                             loading ? "loading .." :
                             <Doughnut data={chartData} 
