@@ -2,32 +2,58 @@ import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { getPoll, submitChoice } from "../api/poll";
 import { ListGroup, Badge, Container, Row, Col } from "react-bootstrap";
+import { Doughnut } from 'react-chartjs-2';
+import { Chart } from 'chart.js/auto'
+import { randomColor } from 'randomcolor'
 import Loading from './Loading';
 import ShareBar from './ShareBar';
+
 const Poll = () => {
     const [poll, setPoll] = useState({});
     const [author, setAuthor] = useState({})
     const [error, setError] = useState("");
+    const [chartData, setChartData] = useState({})
+    const [loading, setLoading] = useState(true);
     let params = useParams();
-
-
 
     useEffect(() => {
         const fetchPoll = async () => {
+            setLoading(true);
             const { poll, author } = await getPoll(params.pollId);
 
             if (poll) {
                 setPoll(poll);
                 setAuthor(author)
+                populateChartData(poll)
                 setError("");
+                setLoading(false)
             }
-            else setError("Failed to reach server")
+            else {
+                setError("Failed to reach server") 
+                alert(error)
+            }
         }
 
         fetchPoll()
     }, [params.pollId]);
 
-
+    const populateChartData = (poll) => {
+        const chartDataFiller = {
+            labels: poll.choices.map(x => x.text),
+            datasets : [
+                {
+                    data: poll.choices.map(x => x.count),
+                    label: "Poll Results",
+                    fill: true,
+                    backgroundColor: randomColor({
+                        count: poll.choices.length,
+                    })
+                }   
+            ]
+        }
+        console.log("chartDataFiller->",chartDataFiller)
+        setChartData(chartDataFiller);
+    };
 
     const vote = async (index) => {
         console.log(index + " - " + poll.voted)
@@ -52,6 +78,7 @@ const Poll = () => {
             newPoll.voted = index;
             newPoll.choices[index].count++;
             setPoll(newPoll)
+            populateChartData(poll)
         }
 
         else {
@@ -111,7 +138,28 @@ const Poll = () => {
                         </ListGroup>
                         {poll.photo && <img src={poll.photo} width='300px' />}
                         <ShareBar content={poll.question}/>
+                         
+                        <div>{
+                            loading ? "loading .." :
+                            <Doughnut data={chartData} 
+                            options={{
+                                plugins: {
+                                    title: {
+                                        display: true,
+                                        text: "Poll Doghnut Chart"
+                                    },
+                                    legend: {
+                                        display: true,
+                                        position: "bottom"
+                                    }
+                                }
+                            }}
+                            />}
+                        </div>
+                        
                         </>
+                        
+
                     :
                     <Loading />
             }
@@ -125,7 +173,7 @@ const Choice = (props) => {
 
     if (isVoted) {
         return (
-            <span style={alignRight} className="float-right">
+            <span style={alignRight} >
                 <Badge className="" bg="success" pill>
                     {voteCount}
                 </Badge>
@@ -135,7 +183,7 @@ const Choice = (props) => {
 
     else {
         return (
-            <span style={alignRight} className="float-right">
+            <span style={alignRight} >
                 <Badge className="" bg="primary" pill>
                     {voteCount}
                 </Badge>
