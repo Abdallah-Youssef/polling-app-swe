@@ -99,6 +99,8 @@ const Poll = () => {
                         <div className='text-center'>
                             Posted on: {poll.createdOn}
                             <br />
+                            {poll.public ? "Public" : "Private"}
+                            <br />
                             Author:&nbsp;  
                             <Link to={`/user/${author.id}`}>
                                 <h5 className='d-inline opacity-50'>{author.email}</h5>
