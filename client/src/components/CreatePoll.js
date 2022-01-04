@@ -33,8 +33,13 @@ const CreatePoll = () => {
 
     const handleCreateClicked = async (event) => {
         event.preventDefault()
-        const id = await createPoll(title, Private, options, Photo)
-        if (id) navigate('/polls/'+id)
+        const res = await createPoll(title, Private, options)
+
+        if (res.error){
+            alert(res.error)
+        }
+
+        else navigate('/polls/'+res.id)
     }
 
 

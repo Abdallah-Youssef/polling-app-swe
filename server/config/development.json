@@ -1,5 +1,7 @@
 { 
     "DBuserName": "adel",
     "DBpass": "shakal",
-    "DBHost": "mongodb+srv://@polling-app-cluster.pwaav.mongodb.net/myFirstDatabase?retryWrites=true&w=majority" 
+    "DBHost": "mongodb+srv://@polling-app-cluster.pwaav.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    "mailUserName": "polling.swe@gmail.com",
+    "mailPassword": "veryverystrongpassword"
 }

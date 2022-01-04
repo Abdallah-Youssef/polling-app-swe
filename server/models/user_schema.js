@@ -12,6 +12,10 @@ const UserSchema = new Schema({
     facebook: {
         id: {type: String},
         email: {type: String, lowercase: true}
+    },
+    verified: {
+        type: Boolean,
+        default: true
     }
 });
 /*

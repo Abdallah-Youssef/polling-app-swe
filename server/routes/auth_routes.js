@@ -5,6 +5,19 @@ const passport_config = require('../passport_config')
 const JWT = require('jsonwebtoken');
 const User = require('../models/user_schema');
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+const config = require('config')
+const VerificationLink = require('../models/verification_link_schema')
+const crypto = require('crypto') // generates random string
+
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    auth: {
+        user: config.get("mailUserName"),
+        pass: config.get("mailPassword")
+    },
+});
 
 function signToken(id)
 {
@@ -38,9 +51,25 @@ function sendTokenandUser(req, res) {
     });
 }
 
-router.get('/', (req, res)=>{
-    res.json('fdgdfg');
-});
+
+async function sendVerificationEmail(email, verificationLink){
+
+
+    const message = `
+    <b>Welcome to our website</b>
+    Visit this link to verify your account : ${verificationLink}
+    `
+
+    transporter.sendMail({
+        from: `"Polling Website" <${config.get("mailUserName")}>`, // sender address
+        to: email, // list of receivers
+        subject: "Welcome to Polling Website - Verify Your Account", // Subject line
+        html: message, // html body
+      }).then(info => {
+        console.log({info});
+      }).catch(console.error);
+}
+
 
 router.post('/signup', async (req, res, next)=>{
 
@@ -58,10 +87,23 @@ router.post('/signup', async (req, res, next)=>{
         local: {
             email: req.body.email,
             password: hash
-        }
+        },
+        verified: false
     });
     await newUser.save();
     req.user = newUser;
+
+
+    const code =  crypto.randomBytes(64).toString('hex');
+
+    const verificationLink = new VerificationLink({
+        userId: newUser._id,
+        code,
+    });
+
+    await verificationLink.save()
+    sendVerificationEmail(req.body.email, "http://localhost:5000/verify/" + code)
+
     next();
 },sendTokenandUser);
 
