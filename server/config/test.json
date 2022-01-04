@@ -1,5 +1,7 @@
 { 
     "DBuserName": "root",
     "DBpass": "example",
-    "DBHost": "mongodb://localhost" 
+    "DBHost": "mongodb://localhost" ,
+    "mailUserName": "polling.swe@gmail.com",
+    "mailPassword": "veryverystrongpassword"
 }
