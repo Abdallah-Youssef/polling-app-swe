@@ -105,6 +105,12 @@ app.get('/', async (req, res) => {
                 },
 
                 {
+                    $sort: {
+                        createdOn: -1 // descending
+                    }
+                },
+
+                {
                     $facet: {
                         "stage1": [{ "$group": { _id: null, count: { $sum: 1 } } }],
                         "stage2": [{ "$skip": (pageNumber - 1) * 10 }, { "$limit": 10 }]
@@ -150,6 +156,7 @@ app.get('/', async (req, res) => {
         }
 
         const count = polls.length
+        polls.sort((p1, p2) => p2.createdOn - p1.createdOn)
         polls = polls.slice((pageNumber - 1) * 10, pageNumber * 10)
 
         res.status(200).json({
@@ -163,6 +170,7 @@ app.get('/', async (req, res) => {
    
     // No query, return all public polls
     const polls = await Poll.find({ public: true, })
+        .sort({createdOn: 'descending'})
         .populate('postedBy', { _id: 1, display_name: 1, 'local.email': 1 })
         .skip((pageNumber - 1) * 10)
         .limit(10)
