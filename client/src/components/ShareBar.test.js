@@ -15,7 +15,7 @@ describe("ShareBar", () => {
         expect(copyButton).toBeInTheDocument()
 
         fireEvent.click(copyButton)
-        expect(navigator.clipboard.writeText).toHaveBeenCalledWith(content + ": http://localhost/");
+        expect(navigator.clipboard.writeText).toHaveBeenCalledWith("http://localhost/");
     });
 
 
