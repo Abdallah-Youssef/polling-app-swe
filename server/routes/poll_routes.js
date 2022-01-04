@@ -30,13 +30,13 @@ pollRouter.post('/create', photoUpload.single('photo'), async (req, res)=>{
             question: req.body.question,
             public: req.body.public,
             choices: req.body.choices.split(','),
-            photoID: req.file.id
         };
+
+        if(req.file)
+            pollData.photoID = req.file.id;
 
         console.log(pollData);
 
-        if(req.body.photoURL)
-            pollData.photoURL = req.body.photoURL;
         const newPost = new Poll(pollData);
         await newPost.save();
         return res.json({status: 'success', id: newPost._id});
