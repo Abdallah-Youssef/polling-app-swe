@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react'
 import { Form, Button, Container, FormControl } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
-import { handleSignUp, UserContext } from '../reducers/user'
+import { handleFacebookAuth, handleSignUp, UserContext } from '../reducers/user'
 
 const SignUp = () => {
     const { dispatch } = useContext(UserContext)
@@ -40,6 +40,19 @@ const SignUp = () => {
             catch (error){
                 alert(error)
             }
+        }
+    }
+
+    const handleFacebookClicked = async (e) => {
+        e.preventDefault()
+
+
+        try {
+            await handleFacebookAuth()(dispatch)
+            navigate('/')
+        }
+        catch (error){
+            alert("MEOW"+ error)
         }
     }
 
@@ -86,6 +99,11 @@ const SignUp = () => {
                 <Button variant="primary" onClick={handleSubmitClicked}>
                     Submit
                 </Button>
+
+                {/* <a variant="primary" href='http::/localhost:5000/userAuth/oauth/facebook'>
+                    Login With Facebook
+                </a> */}
+
             </Form>
         </Container>
     )

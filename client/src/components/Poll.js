@@ -109,7 +109,7 @@ const Poll = () => {
                                 ))
                             }
                         </ListGroup>
-
+                        {poll.photo && <img src={poll.photo} width='300px' />}
                         <ShareBar content={poll.question}/>
                         </>
                     :

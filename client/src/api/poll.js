@@ -69,21 +69,37 @@ export const submitChoice = (pollId, choiceIndex, isPublic, changing) => {
  * @param {Array.<string>} options 
  * @returns on success, id of the created poll
  */
-export const createPoll = (title, Private, options) => {
+export const createPoll = (title, Private, options, Photo) => {
 
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
+    // var myHeaders = new Headers();
+    // myHeaders.append("Content-Type", "application/json");
 
-    var raw = JSON.stringify({
-        "question": title,
-        "public": !Private,
-        "choices": options
-    });
+    // var raw = JSON.stringify({
+    //     "question": title,
+    //     "public": !Private,
+    //     "choices": options
+    // });
+
+    // var myHeaders = new Headers();
+    // myHeaders.append("Content-Type", "multipart/form-data");
+
+    let formData = new FormData();
+    formData.append('question', title);
+    formData.append('public', !Private);
+    formData.append('choices', options);
+    formData.append('photo', Photo);
+
+    // var raw = JSON.stringify({
+    //     "question": title,
+    //     "public": !Private,
+    //     "choices": options
+    // });
+
 
     var requestOptions = {
         method: 'POST',
-        headers: myHeaders,
-        body: raw,
+        // headers: myHeaders,
+        body: formData,
         redirect: 'follow'
     };
 

@@ -8,6 +8,7 @@ const CreatePoll = () => {
     const [options, setOptions] = useState([])
     const [title, setTitle] = useState("")
     const [Private, setPrivate] = useState(false)
+    const [Photo, SetPhoto] = useState(null);
     const handleTitleChange = (event) => {
         setTitle(event.target.value)
     }
@@ -25,9 +26,14 @@ const CreatePoll = () => {
         setPrivate(event.target.checked)
     }
 
+    const handlePhotoChanged = (event) => {
+        event.preventDefault();
+        SetPhoto(event.target.files[0]);
+    }
+
     const handleCreateClicked = async (event) => {
         event.preventDefault()
-        const id = await createPoll(title, Private, options)
+        const id = await createPoll(title, Private, options, Photo)
         if (id) navigate('/polls/'+id)
     }
 
@@ -124,6 +130,8 @@ const CreatePoll = () => {
                         }
 
                     </Form.Group> 
+
+                    <input type={'file'} name='photo' accept=".png,.jpg,.jpeg" onChange={handlePhotoChanged} />
 
                     <Button variant="primary" type="submit" onClick={handleCreateClicked} disabled={!validData}>
                         Create

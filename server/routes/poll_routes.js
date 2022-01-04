@@ -2,6 +2,8 @@ const express = require('express');
 const pollRouter = express.Router();
 const Poll = require('../models/poll_schema');
 const Vote = require('../models/vote_schema');
+const { photoUpload } = require('../initDB');
+const { downloadPhoto } = require('../utils');
 
 /**
  * Request Format
@@ -11,7 +13,15 @@ const Vote = require('../models/vote_schema');
  *     choices: string[]
  * }
  */
-pollRouter.post('/create', async (req, res)=>{
+
+
+ const DEBUG_FUNC = (req, res, next) => {
+    console.log(req.body);
+    next();
+};
+
+
+pollRouter.post('/create', photoUpload.single('photo'), async (req, res)=>{
     try
     {
         const pollData = {
@@ -19,8 +29,11 @@ pollRouter.post('/create', async (req, res)=>{
             createdOn: new Date().getTime(),
             question: req.body.question,
             public: req.body.public,
-            choices: req.body.choices
+            choices: req.body.choices.split(','),
+            photoID: req.file.id
         };
+
+        console.log(pollData);
 
         if(req.body.photoURL)
             pollData.photoURL = req.body.photoURL;
@@ -94,6 +107,7 @@ pollRouter.get('/results/:pollId', isAuthorized, async (req, res) => {
  */
 pollRouter.get('/:pollId', async (req, res) => { 
     const poll = await Poll.findById(req.params.pollId);
+    const photo = await downloadPhoto(poll.photoID);
     await poll.populate('postedBy').execPopulate();
     const userId = req.user.id
     
@@ -120,6 +134,7 @@ pollRouter.get('/:pollId', async (req, res) => {
     let newPoll = JSON.parse(JSON.stringify(poll));
     newPoll['choices'] = choices;
     newPoll['voted'] = voted;
+    newPoll['photo'] = photo;
     res.send({
         poll:newPoll,
         author: {

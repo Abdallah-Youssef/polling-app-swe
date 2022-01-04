@@ -22,11 +22,18 @@ function sendTokenandUser(req, res) {
     res.cookie("token", token, {
         maxAge: 86400000
     });
+
+    console.log(req.user);
+
+    let user = {
+        id: req.user.id
+    };
+
+    if(req.user.login_method === 'facebook')
+        user.email = req.user.facebook.email;
+
     res.status(200).json({
-        user: {
-            id: req.user.id,
-            displayName: req.user.displayName
-        },
+        user: user,
         token: token
     });
 }
