@@ -9,6 +9,7 @@ import { useReducer } from 'react';
 import { userReducer } from './reducers/user';
 import { UserContext } from './reducers/user';
 
+// Mock localStorage
 var localStorageMock = (function () {
     let store = {};
 
@@ -33,10 +34,19 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 
+// Mock naviagtor
+Object.assign(navigator, {
+    clipboard: {
+        writeText: () => { },
+    },
+});
+
+
+// Mock user store and reducer
 export let mockUserState = {}
 export const mockUserDispatch = (action) => mockUserState = userReducer(mockUserState, action)
 
-export const Enviroment = ({element}) => {
+export const Enviroment = ({ element }) => {
     return (
         <BrowserRouter>
             <UserContext.Provider value={{ user: mockUserState, dispatch: mockUserDispatch }}>

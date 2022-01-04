@@ -32,20 +32,20 @@ export const submitChoice = (pollId, choiceIndex, isPublic) => {
 
     );
 
-    var requestOptions = {
-        method: "POST",
-        redirect: "follow",
-        headers: myHeaders,
-        body: raw
-    };
+  var requestOptions = {
+    method: "POST",
+    redirect: "follow",
+    headers: myHeaders,
+    body: raw
+  };
 
-    return fetch(apiURL + "/vote/submit", requestOptions)
-        .then(async (response) => {
-            let statusObject = await response.json();
-            console.log(statusObject)
-            return statusObject.status === "successVote"
-        })
-        .catch(() => alert("Failed to reach the server, Please try again later"));
+  return fetch(apiURL + "/votes/submit", requestOptions) 
+    .then(async (response) => {
+      let statusObject = await response.json();
+      console.log(statusObject)
+      return statusObject.status === "successVote"
+    })
+    .catch(() => alert("Failed to reach the server, Please try again later"));
 };
 
 /**
@@ -73,7 +73,7 @@ export const createPoll = (title, Private, options) => {
         redirect: 'follow'
     };
 
-    return fetch(apiURL + "/polls/createPoll", requestOptions)
+    return fetch(apiURL + "/polls/create", requestOptions)
         .then(response => response.json())
         .then(result => result.id)
         .catch(error => console.log('error', error));
@@ -90,7 +90,7 @@ export const getUserPolls = (userId) => {
         redirect: 'follow'
     };
 
-    return fetch(apiURL + `/user/polls?userId=${userId}`, requestOptions)
+    return fetch(apiURL + `/user/polls/${userId}`, requestOptions)
         .then(response => response.json())
         .catch(error => alert(error));
 }

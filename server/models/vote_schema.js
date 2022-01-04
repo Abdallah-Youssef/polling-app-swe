@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
-const Poll = require('./poll_schema')
 
 const VoteSchema = new Schema({
     user: {
@@ -14,14 +13,12 @@ const VoteSchema = new Schema({
         ref: 'Poll'
     },
     choice: {
-        required: true,
         type: Number,
         min: [0, 'choice is negative'],
         validate: {
             validator: async function (val){
                 //const poll = await Poll.findById(this.poll, 'choices')
                 await this.populate('poll', 'choices').execPopulate();
-                // console.log(poll);
                 return val < this.poll.choices.length;
             },
             message: "choice doesn't exit"

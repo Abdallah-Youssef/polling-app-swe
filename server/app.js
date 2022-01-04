@@ -13,6 +13,7 @@ const User = require('./models/user_schema');
 
 const config = require('config')
 
+mongoose.set('useFindAndModify', false);
 mongoose.connect(
     config.get('DBHost'),
     {
@@ -59,7 +60,7 @@ app.use(
 );
 
 
-app.use('/vote', passport.authenticate('jwt', { session: false }), voteRouter);
+app.use('/votes', passport.authenticate('jwt', {session: false}), voteRouter);
 
 /**
  * @api {get} / Query all public polls
@@ -177,9 +178,17 @@ app.get('/', async (req, res) => {
 
 
 /**
- * The sharing ID
+ * View the details of a particular poll
+ * response format:
+ * {
+ *      postedBy: {display_name : (string)}
+ *      createdOn: Date
+ *      question: string
+ *      public: boolean
+ *      choices: string[] 
+ * }
  */
-app.get('/shared_poll/:pollId', async (req, res) => {
+app.get('/poll/:pollId', async (req, res) =>{
     const poll = await Poll.findById(req.params.pollId);
     await poll.populate('postedBy', { _id: 0, display_name: 1 }).execPopulate();
     res.send(poll);

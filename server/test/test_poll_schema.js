@@ -1,0 +1,1 @@
+require('./test_schema'); //run that test before this one

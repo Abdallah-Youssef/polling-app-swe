@@ -7,7 +7,6 @@ const Poll = require('../models/poll_schema')
 
 const bcrypt = require('bcryptjs');
 
-
 chai.use(chaiHttp);
 const adel = {
     email: "adel@shakal.com",
