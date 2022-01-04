@@ -28,6 +28,10 @@ const PollSchema = new Schema({
             },
             message: "Poll has less than 2 choices"
         }
+    },
+    photoID: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'photos.files'
     }
 });
 

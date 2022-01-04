@@ -8,6 +8,7 @@ const CreatePoll = () => {
     const [options, setOptions] = useState([])
     const [title, setTitle] = useState("")
     const [Private, setPrivate] = useState(false)
+    const [Photo, SetPhoto] = useState(null);
     const handleTitleChange = (event) => {
         setTitle(event.target.value)
     }
@@ -23,6 +24,11 @@ const CreatePoll = () => {
     }
     const handlePrivateCheckBoxChange = (event) => {
         setPrivate(event.target.checked)
+    }
+
+    const handlePhotoChanged = (event) => {
+        event.preventDefault();
+        SetPhoto(event.target.files[0]);
     }
 
     const handleCreateClicked = async (event) => {
@@ -129,6 +135,8 @@ const CreatePoll = () => {
                         }
 
                     </Form.Group> 
+
+                    <input type={'file'} name='photo' accept=".png,.jpg,.jpeg" onChange={handlePhotoChanged} />
 
                     <Button variant="primary" type="submit" onClick={handleCreateClicked} disabled={!validData}>
                         Create

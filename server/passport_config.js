@@ -32,10 +32,10 @@ passport.use(
   "facebook",
   new FacebookStrategy(
     {
-      clientID: "1890056141213739",
-      clientSecret: "64140c1d240c10c05fe245eed0b37e3a",
-      profileFields: ["emails"],
-      callbackURL: "http://localhost:3000/userAuth/oauth/facebook/callback",
+      clientID: "1144582609617214",
+      clientSecret: "bc386fe51a15b8319ec89a466cbcfa14",
+      profileFields: ["email"],
+      callbackURL: "http://localhost:5000/userAuth/oauth/facebook/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {

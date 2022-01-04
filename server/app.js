@@ -6,7 +6,8 @@ const userRouter = require("./routes/users_routes");
 const pollRouter = require("./routes/poll_routes");
 const voteRouter = require("./routes/vote_routes");
 const passport = require("passport");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
+require('./initDB');
 const Poll = require('./models/poll_schema');
 const Vote = require('./models/vote_schema');
 const User = require('./models/user_schema');
@@ -44,7 +45,7 @@ app.use(
 );
 
 const DEBUG_FUNC = (req, res, next) => {
-    //console.log(req.headers);
+    console.log(req);
     next();
 };
 
@@ -54,7 +55,6 @@ app.use("/user", passport.authenticate("jwt", { session: false }), userRouter);
 
 app.use(
     "/polls",
-    DEBUG_FUNC,
     passport.authenticate("jwt", { session: false }),
     pollRouter
 );
