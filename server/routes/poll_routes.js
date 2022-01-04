@@ -34,6 +34,10 @@ pollRouter.post('/create', async (req, res)=>{
     }
 });
 
+/**
+ * checks if the user issuing the request is the creator
+ * or a voter
+ */
 async function isAuthorized(req, res, next){
     //console.log(req.params.pollId);
     const poll = await Poll.findById(req.params.pollId);
