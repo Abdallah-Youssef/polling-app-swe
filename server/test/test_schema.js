@@ -193,14 +193,17 @@ describe('handles votes correctly', function(){
         const votes = await Vote.find({poll: poll.id});
         const voters = votes.map(v => v.user.toString());
 
-        console.log(voters);
-        console.log(second_user.id);
+        // console.log(voters);
+        // console.log(second_user.id);
 
         assert(!voters.includes(fourth_user.id.toString()));
         assert(voters.includes(second_user.id.toString()));
     })
 
 });
+
+
+
 
 
 

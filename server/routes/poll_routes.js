@@ -37,27 +37,6 @@ pollRouter.post('/createPoll', async (req, res)=>{
     }
 });
 
-/* Should we allow creators to delete their polls to begin with?
-pollRouter.delete('/deletePost', async (req, res) => {
-    try
-    {
-        const postToBeDeleted = await Post.findById(req.body.id);
-        console.log(postToBeDeleted);
-        console.log("server " + req.user.id);
-        if(req.user.id != postToBeDeleted.postedBy)
-            return res.send('User not authorized to delete post');
-        //delete comments
-        await Comment.deleteMany({postId: req.body.id});
-        await postToBeDeleted.deleteOne();
-        return res.json({status: 'delete'});
-    }catch(error)
-    {
-        console.log('Error in delete post: ' + error);
-        return res.json({status: 'error'});
-    }
-});
-*/
-
 
 async function isAuthorized(req, res, next){
     const poll = await Poll.findById(req.body.id);
@@ -81,7 +60,6 @@ async function isAuthorized(req, res, next){
 pollRouter.get('/getPollResults', isAuthorized, async (req, res) => {
     try
     {
-        /// ?????????????????????????????
         const results = await poll_helpers.getResults(req.votes);
         console.log(results);
         return res.json({status: 'success', results: results});
