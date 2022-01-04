@@ -1,6 +1,7 @@
 const express = require('express');
 const pollRouter = express.Router();
 const Poll = require('../models/poll_schema');
+const User = require('../models/user_schema')
 const Vote = require('../models/vote_schema');
 
 /**
@@ -12,6 +13,14 @@ const Vote = require('../models/vote_schema');
  * }
  */
 pollRouter.post('/create', async (req, res)=>{
+    // Check if user is verified
+    const user = await User.findOne({_id: req.user.id})
+    console.log(user)
+    if (!user.verified){
+        return res.json({error: "Please Verify your email"})
+    }
+
+
     try
     {
         const pollData = {
@@ -30,7 +39,7 @@ pollRouter.post('/create', async (req, res)=>{
     }catch(error)
     {
         console.log('Error in send post: ' + error);
-        return res.json({status: 'error'});
+        return res.json({error: 'error'});
     }
 });
 

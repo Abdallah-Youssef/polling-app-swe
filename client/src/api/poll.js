@@ -89,7 +89,6 @@ export const createPoll = (title, Private, options) => {
 
     return fetch(apiURL + "/polls/create", requestOptions)
         .then(response => response.json())
-        .then(result => result.id)
         .catch(error => console.log('error', error));
 }
 

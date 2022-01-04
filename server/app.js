@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 const Poll = require('./models/poll_schema');
 const Vote = require('./models/vote_schema');
 const User = require('./models/user_schema');
-
+const VerificationLink = require('./models/verification_link_schema')
 const config = require('config')
 
 mongoose.set('useFindAndModify', false);
@@ -201,6 +201,17 @@ app.get('/poll/:pollId', async (req, res) =>{
     await poll.populate('postedBy', { _id: 0, display_name: 1 }).execPopulate();
     res.send(poll);
 });
+
+
+app.get('/verify/:code', async (req, res) => {
+    const verificationLink = await VerificationLink.findOne({code: req.params.code})
+    
+    await User.findOneAndUpdate({_id: verificationLink.userId}, {verified: true})
+
+    VerificationLink.deleteOne({code: req.params.code})
+
+    res.send("Verified Successfully")
+})
 
 app.listen(5000, () => {
     console.log("Hemlo to meow app!");
