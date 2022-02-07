@@ -9,6 +9,7 @@ import { userReducer, UserContext } from "./reducers/user";
 import { useReducer } from "react";
 import HomePage from "./components/HomePage";
 import Profile from "./components/Profile";
+import Dashboard from "./components/Dashboard";
 function App() {
   const [user, dispatch] = useReducer(userReducer, {});
 
@@ -21,6 +22,7 @@ function App() {
           <Route element={<RequireAuth />}>
             <Route exact path="/create" element={<CreatePoll />} />
             <Route path="/polls/:pollId" element={<Poll />}/>
+            <Route path="/polls/:pollId/dashboard" element={<Dashboard />}/>
             <Route exact path="/user/:userId" element={<Profile />}/>
           </Route>
 

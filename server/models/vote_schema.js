@@ -24,8 +24,8 @@ const VoteSchema = new Schema({
             message: "choice doesn't exit"
         }
     },
-    public: {type: Boolean, default: true}
-});
+    public: {type: Boolean, default: true},
+}, {timestamps: true});
 
 VoteSchema.pre('save', async function(){
     const existingVote = await this.constructor.findOne({

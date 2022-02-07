@@ -22,6 +22,16 @@ async function checkEmailVerification(req, res, next){
     next();
 }
 
+async function verifyAuthor(req, res, next){
+    const poll = await Poll.findById(req.params.pollId)
+
+    if (poll.postedBy != req.user.id)
+        return res.json({error: "The requestor is not the author"})
+    
+    next();
+}
+
+
 /**
  * Request Format
  * {
@@ -161,10 +171,39 @@ pollRouter.get('/:pollId', async (req, res) => {
  * .. just a number
  */
 pollRouter.get('/:pollId/vote/:userId', async (req, res) => {
-    //TODO anonymous
     let vote = await Vote.find({user: req.params.userId, poll: req.params.pollId});
     res.send(vote.choice);
 });
+
+/**
+ * Return the prefix sum of the votes
+ * Requestor must be the author
+ */
+pollRouter.get('/:pollId/votes', verifyAuthor, async (req, res) =>{
+    const poll = await Poll.findOne({_id: req.params.pollId})
+    const votes = await Vote.find({poll: req.params.pollId})
+    votes.sort((a, b) => a.createdAt - b.createdAt)
+
+
+    // Create prefix sum array for each choice
+    let prefixes = []
+    let counters = []
+    for (let i = 0;i < poll.choices.length;i++){
+        prefixes.push([])
+        counters.push(0)
+    }
+
+    for (let i = 0;i < votes.length;i++){
+        const choice = votes[i].choice
+        counters[choice]++
+        prefixes[choice].push({x: votes[i].createdAt.getTime(), y: counters[choice]})
+    }
+
+
+    res.json({
+        series: prefixes.map((prefix, i) => ({name: poll.choices[i], data: prefix}))
+    })
+})
   
 
 module.exports = pollRouter;

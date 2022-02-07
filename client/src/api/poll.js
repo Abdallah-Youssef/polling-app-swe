@@ -123,3 +123,20 @@ export const getUserPolls = (userId) => {
         .then(response => response.json())
         .catch(error => alert(error));
 }
+
+
+/**
+ * 
+ * @param {string} pollId
+ * @returns Array of prefix arrays
+ */
+export const getVotes = (pollId) => {
+    var requestOptions = {
+        method: 'GET',
+        redirect: 'follow'
+    };
+
+    return fetch(apiURL + "/polls/6201575859921b59ac25dd11/votes", requestOptions)
+        .then(response => response.json())
+        .catch(error => console.log('error', error));
+}

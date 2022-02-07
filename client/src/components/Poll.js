@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useLocation, useNavigate } from 'react-router-dom'
 import { getPoll, submitChoice } from "../api/poll";
-import { ListGroup, Badge, Container, Row, Col, Image } from "react-bootstrap";
+import { ListGroup, Badge, Container, Row, Col, Image, Button } from "react-bootstrap";
 import { Doughnut } from 'react-chartjs-2';
 import { Chart } from 'chart.js/auto'
 import { randomColor } from 'randomcolor'
 import Loading from './Loading';
 import ShareBar from './ShareBar';
+import { UserContext } from "../reducers/user";
+import { useContext } from "react";
 
 const Poll = () => {
     const [poll, setPoll] = useState({});
@@ -14,9 +16,13 @@ const Poll = () => {
     const [error, setError] = useState("");
     const [chartData, setChartData] = useState({})
     const [loading, setLoading] = useState(true);
+    const {user} = useContext(UserContext)
     let params = useParams();
 
-    useEffect(() => {
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {        
         const fetchPoll = async () => {
             setLoading(true);
             const { poll, author } = await getPoll(params.pollId);
@@ -86,6 +92,9 @@ const Poll = () => {
         }
     }
 
+    const handleDashboardClicked = () =>  navigate(location.pathname + "/dashboard")
+    
+
     return (
         <Container className='py-3 mt-5 w-50 border border-dark rounded'>
             {
@@ -105,6 +114,13 @@ const Poll = () => {
                             <Link to={`/user/${author.id}`}>
                                 <h5 className='d-inline opacity-50'>{author.email}</h5>
                             </Link>
+                            <br />
+                            {
+                                user.id === author.id &&
+                                <Button variant="info" onClick={handleDashboardClicked}>
+                                    Dashboard
+                                </Button>
+                            }
                         </div>
 
 
