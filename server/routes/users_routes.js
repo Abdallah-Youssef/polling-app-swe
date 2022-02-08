@@ -110,14 +110,20 @@ userRouter.get('/polls/:userId', async (req, res) => {
  */
 userRouter.get('/:userId', async (req, res) => {
     let id = req.params.userId;
-    const user = await User.findById(id);
+    try{
+        const user = await User.findById(id);
+        res.send({
+            email: user.local.email,
+            display_name: user.display_name,
+            bio: user.bio,
+            color: user.color
+        })
+    }
+    catch(err){
+        res.send({error: "user not found"})
+    }
 
-    res.send({
-        email: user.local.email,
-        display_name: user.display_name,
-        bio: user.bio,
-        color: user.color
-    })
+ 
 });
 
 /**

@@ -6,11 +6,16 @@ const User = require('../models/user_schema')
 const Poll = require('../models/poll_schema')
 
 const bcrypt = require('bcryptjs');
-
 chai.use(chaiHttp);
 const adel = {
     email: "adel@shakal.com",
     password: "Password@1"
+}
+
+const adelUserInfo = {
+    bio: "I am adel",
+    display_name: "Adel",
+    color: "#fff"
 }
 
 const mohamed = {
@@ -40,7 +45,9 @@ describe('Authentication', () => {
 
                 assert(user.local.email === adel.email)
                 assert(await bcrypt.compare(adel.password, user.local.password))
+                
                 adel.id = user._id
+                adel.token = res.body.token
 
                 done();
             });
@@ -52,6 +59,7 @@ describe('Authentication', () => {
             .send(JSON.stringify(mohamed))
             .end(async (err, res) => {
                 mohamed.id = res.body.user.id
+                mohamed.token = res.body.token
             });
     });
 
@@ -240,4 +248,72 @@ describe('Queries on Polls', () => {
         })
     })
 
+})
+
+describe('Queries on Users', () => {
+    describe('Update user info', () => {
+        it ('Ignores unallowed attributes, and updates correct attributes', (done) => {
+            chai.request(app)
+            .post('/user/updateinfo')
+            .set('content-type', 'application/json')
+            .set('Authorization', adel.token)
+            .send(JSON.stringify({
+                ...adelUserInfo,
+                badAttribute: "badValue"
+            }))
+            .end(async (err, res) => {
+                const adelUser = await User.findById(adel.id)
+
+                assert(!res.body.badAttribute)
+                assert(!adelUser.badAttribute)
+
+                assert(res.body.bio === adelUserInfo.bio)
+                assert(adelUser.bio === adelUserInfo.bio)
+                done();
+            });
+        })
+
+        it ('Rejects invalid color strings', (done) => {
+            chai.request(app)
+            .post('/user/updateinfo')
+            .set('content-type', 'application/json')
+            .set('Authorization', adel.token)
+            .send(JSON.stringify({
+                color: "not rgb hex"
+            }))
+            .end((err, res) => {
+                assert(res.body.error)
+                done();
+            });
+        })
+    })
+
+    describe('Query user info', () => {
+
+        it ('Handles non existing users', (done) => {
+            chai.request(app)
+            .get('/user/123')
+            .set('content-type', 'application/json')
+            .set('Authorization', adel.token)
+            .end((err, res) => {
+                assert(res.body.error)
+                done();
+            });
+        })
+
+
+        it ('Gets Correct Info', (done) => {
+            chai.request(app)
+            .get('/user/'+adel.id)
+            .set('content-type', 'application/json')
+            .set('Authorization', adel.token)
+            .end((err, res) => {
+                assert(res.body.bio === adelUserInfo.bio)
+                assert(res.body.display_name === adelUserInfo.display_name)
+                assert(res.body.color === adelUserInfo.color)
+
+                done();
+            });
+        })
+    })
 })
