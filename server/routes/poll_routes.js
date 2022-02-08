@@ -214,8 +214,6 @@ pollRouter.get('/:pollId/votes', verifyAuthor, async (req, res) =>{
 
 pollRouter.get('/:pollId/close', verifyAuthor, async (req, res) =>{
     let pollId = req.params.pollId;
-    console.log("closing poll ..")
-    console.log("pollId: ", pollId)
 
     const exiting_vote = await Poll.findOneAndUpdate({
         _id: pollId
