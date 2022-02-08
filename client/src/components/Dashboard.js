@@ -73,7 +73,6 @@ const Dashboard = () => {
                 navigate("/")
             }
 
-            console.log(res.series)
             setSeries(res.series)
             setLoading(false)
         }
