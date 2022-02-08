@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import { CloseButton, Form, Row, Col, Container, Button, FormGroup, FormControl } from "react-bootstrap"
 import { useNavigate } from 'react-router-dom'
 import { createPoll } from '../api/poll'
@@ -43,22 +43,15 @@ const CreatePoll = () => {
     }
 
 
-    const [validData, setValidData] = useState(false)
-    useEffect(() => {
-        setValidData(checkValidData())
-    }, [title, options])
+    const validData = useMemo(() => {
+        const emptyString = (str) => str.trim() === ""
 
-    const checkValidData = () => {
-        if (title.trim() === "" || options.length < 2)
+        if (emptyString(title) || options.length < 2 || options.some(emptyString))
             return false;
 
-        for (let i = 0; i < options.length; i++) {
-            if (options[i].trim() === "") 
-                return false
-        }
-
         return true;
-    }
+    }, [title, options]);
+
 
     return (
         <>
@@ -122,9 +115,12 @@ const CreatePoll = () => {
 
                             )
                         }
-                        <Button variant="success" onClick={handleAddOptionClick} className='w-25 mx-auto '>
-                            Add Option
-                        </Button>
+
+                        <center>
+                            <Button variant="success" onClick={handleAddOptionClick} className='w-25 mx-auto '>
+                                Add Option
+                            </Button>
+                        </center>
 
                         {
                             options.length < 2 ?
@@ -136,13 +132,18 @@ const CreatePoll = () => {
 
                     </Form.Group> 
 
-                    <input type={'file'} name='photo' accept=".png,.jpg,.jpeg" onChange={handlePhotoChanged} />
+                    <hr/>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Poll Image</Form.Label>
+                        <Form.Control type='file' name='photo' accept=".png,.jpg,.jpeg" onChange={handlePhotoChanged} />
+                    </Form.Group>
 
-                    <Button variant="primary" type="submit" onClick={handleCreateClicked} disabled={!validData}>
-                        Create
-                    </Button>
-                    <Row>
-                    </Row>
+
+                    <center>
+                        <Button variant="primary" type="submit" onClick={handleCreateClicked} disabled={!validData}>
+                            Create
+                        </Button>
+                    </center>
                 </Form>
             </Container>
 
