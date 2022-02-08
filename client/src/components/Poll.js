@@ -110,7 +110,7 @@ const Poll = () => {
 
                         <h1 className='display-2 text-center'> {poll.question}  </h1>
 
-                        <div className='text-center'>
+                        <div id="poll-info" className='text-center'>
                             Posted on: {poll.createdOn}
                             <br />
                             {poll.public ? "Public" : "Private"}
@@ -119,7 +119,8 @@ const Poll = () => {
                             <Link to={`/user/${author.id}`}>
                                 <h5 className='d-inline opacity-50'>{author.email}</h5>
                             </Link>
-                            <br />
+                            
+                            <br/>
                             {
                                 user.id === author.id &&
                                 <Button variant="info" onClick={handleDashboardClicked}>
@@ -132,6 +133,7 @@ const Poll = () => {
                                     Close Poll
                                 </Button>
                             }
+
                         </div>
 
 
