@@ -35,7 +35,7 @@ const Profile = () => {
             else setError("Failed to reach server")
         })
 
-    }, []);
+    }, [params.userId]);
 
     
     return (

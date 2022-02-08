@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { ListGroup, Container } from "react-bootstrap";
-import Loading from "./Loading";
 
 const PollList = ({ polls }) => {
 

@@ -136,7 +136,7 @@ export const getVotes = (pollId) => {
         redirect: 'follow'
     };
 
-    return fetch(apiURL + "/polls/6201575859921b59ac25dd11/votes", requestOptions)
+    return fetch(apiURL + "/polls/"+pollId+"/votes", requestOptions)
         .then(response => response.json())
         .catch(error => console.log('error', error));
 }

@@ -22,6 +22,9 @@ async function checkEmailVerification(req, res, next){
     next();
 }
 
+/**
+ * Check that the requesting user is the author of the poll 
+ */
 async function verifyAuthor(req, res, next){
     const poll = await Poll.findById(req.params.pollId)
 
