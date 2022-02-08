@@ -57,8 +57,6 @@ const Profile = () => {
                 setUserInfo(res)
             }else setError(res.error)
         })
-
-
     }
 
 

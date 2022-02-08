@@ -86,12 +86,11 @@ const Dashboard = () => {
 
     return (
         <div className='w-75 my-3 mx-auto border border-3 border-secondary rounded'>
-            {loading && <center><Loading /></center>}
-
             <Button className="m-3" variant="dark" onClick={() => navigate("/polls/"+params.pollId)}>
                 <BsArrowLeftSquare className='m-2'/>Back to Poll
             </Button>
 
+            {loading && <center><Loading /></center>}
 
             <div className='m-5 p-5 border border-primary rounded'>
             {series &&<ReactApexChart options={options} series={series} type="area" height={350} />}
