@@ -182,7 +182,7 @@ pollRouter.get('/:pollId/vote/:userId', async (req, res) => {
 pollRouter.get('/:pollId/votes', verifyAuthor, async (req, res) =>{
     const poll = await Poll.findOne({_id: req.params.pollId})
     const votes = await Vote.find({poll: req.params.pollId})
-    votes.sort((a, b) => a.createdAt - b.createdAt)
+    votes.sort((a, b) => a.updatedAt - b.updatedAt)
 
 
     // Create prefix sum array for each choice
@@ -196,7 +196,7 @@ pollRouter.get('/:pollId/votes', verifyAuthor, async (req, res) =>{
     for (let i = 0;i < votes.length;i++){
         const choice = votes[i].choice
         counters[choice]++
-        prefixes[choice].push({x: votes[i].createdAt.getTime(), y: counters[choice]})
+        prefixes[choice].push({x: votes[i].updatedAt.getTime(), y: counters[choice]})
     }
 
 
