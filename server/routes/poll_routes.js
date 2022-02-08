@@ -28,6 +28,9 @@ async function checkEmailVerification(req, res, next){
 async function verifyAuthor(req, res, next){
     const poll = await Poll.findById(req.params.pollId)
 
+    if(!poll)
+        return res.json({error: "Give us the right poll id you fucking idiot :)"})
+
     if (poll.postedBy != req.user.id)
         return res.json({error: "The requestor is not the author"})
     
@@ -208,5 +211,20 @@ pollRouter.get('/:pollId/votes', verifyAuthor, async (req, res) =>{
     })
 })
   
+
+pollRouter.get('/:pollId/close', verifyAuthor, async (req, res) =>{
+    let pollId = req.params.pollId;
+    console.log("closing poll ..")
+    console.log("pollId: ", pollId)
+
+    const exiting_vote = await Poll.findOneAndUpdate({
+        _id: pollId
+    }, {$set: {'closed' : true}});
+
+    if (!exiting_vote)
+        throw new Error("This user has not voted in this poll");
+
+    res.end("poll closed")
+})
 
 module.exports = pollRouter;
