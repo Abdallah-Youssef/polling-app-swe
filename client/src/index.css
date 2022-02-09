@@ -32,3 +32,14 @@ html, .App{
   cursor: pointer;
   background-color: #14ffe0;
 }
+
+.list-group-item a {
+  color: rgb(56, 55, 55);
+  text-decoration: none;
+}
+
+.list-group-item a:hover {
+  color: rgb(20, 20, 20);
+  text-decoration: none;
+  font-weight: bolder;
+}
