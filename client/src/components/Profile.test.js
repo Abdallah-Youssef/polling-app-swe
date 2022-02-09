@@ -1,5 +1,4 @@
 import { findByDisplayValue, findByRole, findByText, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import Component from './Component';
 import Profile from './Profile'
 import {Enviroment, setMockUserId} from '../setupTests';
 import { apiURL } from '../api/url';

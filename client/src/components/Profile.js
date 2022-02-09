@@ -47,7 +47,6 @@ const Profile = () => {
 
   
     const onSubmit = async (displayName, bio, color) => {
-        console.log({displayName, bio, color})
         setEditing(false)
         updateUserInfo(displayName, bio, color)
         .then(res => {

@@ -109,7 +109,7 @@ describe('Queries on Polls', () => {
 
     it("Handles invalid searchBy types", (done) => {
         chai.request(app)
-            .get('/?searchBy=hamada')
+            .get('/pollFeed?searchBy=hamada')
             .end(async (err, res) => {
                 assert(res.status === 400)
                 assert(res.body.error)
@@ -119,7 +119,7 @@ describe('Queries on Polls', () => {
 
     it("Handles invalid pageNumber", (done) => {
         chai.request(app)
-            .get('/?pageNumber=-1')
+            .get('/pollFeed?pageNumber=-1')
             .end(async (err, res) => {
                 assert(res.status === 400)
                 assert(res.body.error)
@@ -129,7 +129,7 @@ describe('Queries on Polls', () => {
 
     it("Behaves normally for empty query", (done) => {
         chai.request(app)
-            .get('/')
+            .get('/pollFeed')
             .end(async (err, res) => {
                 assert(res.status === 200)
                 assert(res.body.polls.length === 10)
@@ -143,7 +143,7 @@ describe('Queries on Polls', () => {
     describe("pageNumber", () => {
         it("Behaves normally for pageNumber query", (done) => {
             chai.request(app)
-                .get('/?pageNumber=2')
+                .get('/pollFeed?pageNumber=2')
                 .end(async (err, res) => {
                     assert(res.status === 200)
                     assert(res.body.polls.length === 9)
@@ -154,7 +154,7 @@ describe('Queries on Polls', () => {
 
         it("Handles out of range pageNumber", (done) => {
             chai.request(app)
-                .get('/?pageNumber=3')
+                .get('/pollFeed?pageNumber=3')
                 .end(async (err, res) => {
                     assert(res.status === 200)
                     assert(res.body.polls.length === 0)
@@ -168,7 +168,7 @@ describe('Queries on Polls', () => {
     describe('searchBy author', () => {
         it("Handles searchBy Author mohamed correctly", (done) => {
             chai.request(app)
-                .get('/?searchBy=author&searchAttribute=mohamed')
+                .get('/pollFeed?searchBy=author&searchAttribute=mohamed')
                 .end(async (err, res) => {
                     assert(res.status === 200)
                     assert(res.body.polls.length === 6)
@@ -178,7 +178,7 @@ describe('Queries on Polls', () => {
         })
         it("Handles searchBy Author adel correctly", (done) => {
             chai.request(app)
-                .get('/?searchBy=author&searchAttribute=adel')
+                .get('/pollFeed?searchBy=author&searchAttribute=adel')
                 .end(async (err, res) => {
                     assert(res.status === 200)
 
@@ -192,7 +192,7 @@ describe('Queries on Polls', () => {
 
         it("Handles pagination Author adel correctly", (done) => {
             chai.request(app)
-                .get('/?pageNumber=2&searchBy=author&searchAttribute=adel')
+                .get('/pollFeed?pageNumber=2&searchBy=author&searchAttribute=adel')
                 .end(async (err, res) => {
                     assert(res.status === 200)
 
@@ -213,7 +213,7 @@ describe('Queries on Polls', () => {
 
         it("'Less' polls", (done) => {
             chai.request(app)
-                .get('/?searchBy=title&searchAttribute=less')
+                .get('/pollFeed?searchBy=title&searchAttribute=less')
                 .end(async (err, res) => {
                     assert(res.status === 200)
 
@@ -227,7 +227,7 @@ describe('Queries on Polls', () => {
 
         it("'Greater' polls", (done) => {
             chai.request(app)
-                .get('/?searchBy=title&searchAttribute=greater')
+                .get('/pollFeed?searchBy=title&searchAttribute=greater')
                 .end(async (err, res) => {
                     assert(res.status === 200)
                     assert(res.body.polls.length === 10)
@@ -238,7 +238,7 @@ describe('Queries on Polls', () => {
 
         it("'Greater' polls pagination", (done) => {
             chai.request(app)
-                .get('/?pageNumber=2&searchBy=title&searchAttribute=greater')
+                .get('/pollFeed?pageNumber=2&searchBy=title&searchAttribute=greater')
                 .end(async (err, res) => {
                     assert(res.status === 200)
                     assert(res.body.polls.length === 1)

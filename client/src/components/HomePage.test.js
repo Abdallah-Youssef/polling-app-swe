@@ -29,7 +29,7 @@ describe("HomePage", () => {
         render(<Enviroment element={<HomePage />} />);
 
         const [pollList, paginationCounter] = await screen.findAllByRole('list')
-        expect(global.fetch).toBeCalledWith("http://localhost:5000?pageNumber=1", { "method": "GET", "redirect": "follow" })
+        expect(global.fetch).toBeCalledWith("http://localhost:5000/pollFeed?pageNumber=1", { "method": "GET", "redirect": "follow" })
 
         expect(pollList.childElementCount).toEqual(10)
         expect(paginationCounter.childElementCount).toEqual(2)
@@ -68,7 +68,7 @@ describe("HomePage", () => {
         fireEvent.click(titleOption)
         fireEvent.click(searchButton)
 
-        expect(global.fetch).toBeCalledWith("http://localhost:5000?pageNumber=1&searchBy=author&searchAttribute=adel", { "method": "GET", "redirect": "follow" })
+        expect(global.fetch).toBeCalledWith("http://localhost:5000/pollFeed?pageNumber=1&searchBy=author&searchAttribute=adel", { "method": "GET", "redirect": "follow" })
         await screen.findByText("How is it?")
     });
 
@@ -107,7 +107,7 @@ describe("HomePage", () => {
         fireEvent.click(titleOption)
         fireEvent.click(searchButton)
 
-        expect(global.fetch).toBeCalledWith("http://localhost:5000?pageNumber=1&searchBy=title&searchAttribute="+title, {"method": "GET", "redirect": "follow"})        
+        expect(global.fetch).toBeCalledWith("http://localhost:5000/pollFeed?pageNumber=1&searchBy=title&searchAttribute="+title, {"method": "GET", "redirect": "follow"})        
 
         await screen.findByText(title)
     });

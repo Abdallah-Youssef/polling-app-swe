@@ -9,6 +9,7 @@ import Loading from './Loading';
 import ShareBar from './ShareBar';
 import { UserContext } from "../reducers/user";
 import { useContext } from "react";
+import { IoMdAnalytics } from 'react-icons/io'
 
 const Poll = () => {
     const [poll, setPoll] = useState({});
@@ -62,8 +63,6 @@ const Poll = () => {
     };
 
     const vote = async (index) => {
-        console.log(index + " - " + poll.voted)
-
         let newPoll = Object.assign({}, poll);
         
         /**
@@ -123,7 +122,8 @@ const Poll = () => {
                             <br/>
                             {
                                 user.id === author.id &&
-                                <Button variant="info" onClick={handleDashboardClicked}>
+                                <Button variant="dark" onClick={handleDashboardClicked}>
+                                    <IoMdAnalytics className='mx-1'/>
                                     Dashboard
                                 </Button>
                             }
