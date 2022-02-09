@@ -287,6 +287,34 @@ describe('Queries on Users', () => {
                 done();
             });
         })
+
+        it ('Rejects non numeric age', (done) => {
+            chai.request(app)
+            .post('/user/updateinfo')
+            .set('content-type', 'application/json')
+            .set('Authorization', adel.token)
+            .send(JSON.stringify({
+                age: "string not number"
+            }))
+            .end((err, res) => {
+                assert(res.body.error)
+                done();
+            });
+        })
+
+        it ('Rejects wrong gender', (done) => {
+            chai.request(app)
+            .post('/user/updateinfo')
+            .set('content-type', 'application/json')
+            .set('Authorization', adel.token)
+            .send(JSON.stringify({
+                gender: "not a gender"
+            }))
+            .end((err, res) => {
+                assert(res.body.error)
+                done();
+            });
+        })
     })
 
     describe('Query user info', () => {

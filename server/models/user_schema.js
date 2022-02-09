@@ -8,6 +8,8 @@ const UserSchema = new Schema({
     display_name: {type: String},
     bio: {type: String, default:"Welcome to my profile!"},
     color:{type: String, default:"#ffffff", validate: [colorValidator, 'not a valid color']},
+    age:{type: Number, min: 1, max:120},
+    gender:{type: String, enum: ['male', 'female']},
     login_method: {type: String, enum: ['local', 'facebook'], required: true},
     local: {
         email: {type: String, lowercase: true},

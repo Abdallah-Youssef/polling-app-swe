@@ -75,14 +75,14 @@ export const getUserInfo = (userId) => {
 };
 
 
-export const updateUserInfo = (displayName, bio, color) => {
+export const updateUserInfo = (displayName, bio, color, age, gender) => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
 
     var requestOptions = {
         method: 'POST',
-        body: JSON.stringify({display_name: displayName, bio, color}),
+        body: JSON.stringify({display_name: displayName, bio, color, age, gender}),
         headers: myHeaders,
         redirect: 'follow',
     };
