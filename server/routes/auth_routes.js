@@ -36,7 +36,7 @@ function sendTokenandUser(req, res) {
         maxAge: 86400000
     });
 
-    console.log(req.user);
+    // console.log(req.user);
 
     let user = {
         id: req.user.id
@@ -59,6 +59,9 @@ async function sendVerificationEmail(email, verificationLink){
     <b>Welcome to our website</b>
     Visit this link to verify your account : ${verificationLink}
     `
+
+    if (process.env.NODE_ENV === 'test')
+        return
 
     transporter.sendMail({
         from: `"Polling Website" <${config.get("mailUserName")}>`, // sender address

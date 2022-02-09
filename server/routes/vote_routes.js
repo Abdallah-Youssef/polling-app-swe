@@ -14,7 +14,22 @@ const voteRouter = express.Router();
  *      public (boolean, optional)
  * }
  */
-voteRouter.post('/submit', async (req, res)=>{
+
+async function  isVoteOpened(req, res, next) {
+    let pollId = req.body.poll;
+    console.log("pollId ->", pollId)
+    const poll = await Poll.findOne({_id: pollId})
+
+    if(!poll)
+        return res.json({error: "Give us the right poll id you fucking idiot :)"})
+
+    if(poll['closed'])
+        return res.json({error: "poll closed"})
+
+    next()
+}
+
+voteRouter.post('/submit', isVoteOpened, async (req, res)=>{
     try
     {
 
@@ -48,7 +63,7 @@ voteRouter.post('/submit', async (req, res)=>{
  *      public (boolean, optional)
  * }
  */
- voteRouter.post('/change', async (req, res)=>{
+ voteRouter.post('/change', isVoteOpened, async (req, res)=>{
     try
     {
 

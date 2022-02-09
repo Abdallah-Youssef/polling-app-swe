@@ -18,4 +18,6 @@ html, .App{
 }
 
 
-
+#poll-info button {
+  margin: 10px;
+}

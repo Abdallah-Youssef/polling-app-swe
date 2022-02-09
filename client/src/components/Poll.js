@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useParams, useLocation, useNavigate } from 'react-router-dom'
-import { getPoll, submitChoice } from "../api/poll";
+import { getPoll, submitChoice, closePoll } from "../api/poll";
 import { ListGroup, Badge, Container, Row, Col, Image, Button } from "react-bootstrap";
 import { Doughnut } from 'react-chartjs-2';
 import { Chart } from 'chart.js/auto'
@@ -93,7 +93,12 @@ const Poll = () => {
     }
 
     const handleDashboardClicked = () =>  navigate(location.pathname + "/dashboard")
-    
+    const handleStopVotingClicked = () => {
+        let newPoll = Object.assign({}, poll);
+        newPoll['closed'] = true;
+        setPoll(newPoll);
+        closePoll(poll['_id']);
+    }
 
     return (
         <Container className='py-3 mt-5 w-50 border border-dark rounded'>
@@ -105,7 +110,7 @@ const Poll = () => {
 
                         <h1 className='display-2 text-center'> {poll.question}  </h1>
 
-                        <div className='text-center'>
+                        <div id="poll-info" className='text-center'>
                             Posted on: {poll.createdOn}
                             <br />
                             {poll.public ? "Public" : "Private"}
@@ -114,13 +119,21 @@ const Poll = () => {
                             <Link to={`/user/${author.id}`}>
                                 <h5 className='d-inline opacity-50'>{author.email}</h5>
                             </Link>
-                            <br />
+                            
+                            <br/>
                             {
                                 user.id === author.id &&
                                 <Button variant="info" onClick={handleDashboardClicked}>
                                     Dashboard
                                 </Button>
                             }
+                            {
+                                user.id === author.id && !poll["closed"] &&
+                                <Button variant="danger" onClick={handleStopVotingClicked}>
+                                    Close Poll
+                                </Button>
+                            }
+
                         </div>
 
 
@@ -128,7 +141,7 @@ const Poll = () => {
                         <br></br>
                         <ListGroup as="ul" numbered>
                             {
-                                poll["choices"] &&
+                                poll["choices"] && !poll["closed"] &&
                                 poll["choices"].map((choice, i) => (
                                     <ListGroup.Item
                                         className="clearfix"
@@ -165,8 +178,25 @@ const Poll = () => {
                         <hr/>
                         <ShareBar content={poll.question}/>
                         <hr/>
-                        <div>{
-                            loading ? "loading .." :
+                        <div>
+
+
+                            <center>
+                                {
+                                    loading ?
+                                    <Loading> </Loading> 
+                                    :
+                                    <h3>   
+                                        total votes: {chartData['datasets'][0]['data'].reduce((a,b) => a + b, 0)}
+                                    </h3>
+                                }
+                            </center>
+
+                            {
+
+                            loading ?
+                            <Loading> </Loading> 
+                             :
                             <Doughnut data={chartData} 
                             options={{
                                 plugins: {
@@ -180,7 +210,9 @@ const Poll = () => {
                                     }
                                 }
                             }}
-                            />}
+                            />
+                            
+                            }
                         </div>
                         
                         </>
