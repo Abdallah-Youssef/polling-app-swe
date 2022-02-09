@@ -10,7 +10,7 @@ const CustomNavbar = () => {
 
     const handleLogOutClicked = () => {
         handleLogOut()(dispatch);
-        navigate("/");
+        navigate("/pollFeed");
     };
 
     const handleLogInClicked = () => {
@@ -21,7 +21,7 @@ const CustomNavbar = () => {
         <>
             <Navbar bg="dark" variant="dark">
                 <Container>
-                    <Navbar.Brand as={Link} to="/">
+                    <Navbar.Brand as={Link} to="/pollFeed">
                         Polling Website
                     </Navbar.Brand>
 

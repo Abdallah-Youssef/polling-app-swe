@@ -9,7 +9,7 @@ export const getAllPolls = () => {
     // localhost:5000?page=2&searchBy=title/author&searchText=example
 
 
-    return fetch(apiURL, requestOptions)
+    return fetch(apiURL + '/pollFeed', requestOptions)
         .then((response) => response.json())
         .then(res => res.polls)
         .catch(() => alert("Failed to reach the server, Please try again later"));
@@ -28,7 +28,7 @@ export const getPolls = (searchBy, searchAttribute="", pageNumber = 1) => {
     };
 
 
-    let url = apiURL + `?pageNumber=${pageNumber}`
+    let url = apiURL + '/pollFeed' + `?pageNumber=${pageNumber}`
 
     if (searchBy)
         url += `&searchBy=${searchBy}&searchAttribute=${searchAttribute}`

@@ -60,10 +60,10 @@ app.use('/votes', passport.authenticate('jwt', {session: false}), voteRouter);
  * @apiSuccess {number} count Number of polls that match the query
  * 
  */
-app.get('/', async (req, res) => {
+app.get('/pollFeed', async (req, res) => {
     if (req.query.searchBy && req.query.searchBy !== 'title' && req.query.searchBy !== 'author') {
         res.status(400).send({ error: "searchBy type not allowed" })
-        return
+        return 
     }
 
     if (req.query.pageNumber <= 0){
@@ -165,24 +165,6 @@ app.get('/', async (req, res) => {
         count: countPublicPolls
     });
     return
-});
-
-
-/**
- * View the details of a particular poll
- * response format:
- * {
- *      postedBy: {display_name : (string)}
- *      createdOn: Date
- *      question: string
- *      public: boolean
- *      choices: string[] 
- * }
- */
-app.get('/poll/:pollId', async (req, res) =>{
-    const poll = await Poll.findById(req.params.pollId);
-    await poll.populate('postedBy', { _id: 0, display_name: 1 }).execPopulate();
-    res.send(poll);
 });
 
 
