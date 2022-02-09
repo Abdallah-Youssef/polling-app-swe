@@ -3,12 +3,13 @@ const bcrypt = require('bcryptjs');
 const {Schema} = mongoose;
 
 const colorValidator = (v) => (/^#([0-9a-f]{3}){1,2}$/i).test(v)
+const randomAgeGenerator = () => Math.floor(Math.random() * 120)
 
 const UserSchema = new Schema({
     display_name: {type: String},
     bio: {type: String, default:"Welcome to my profile!"},
     color:{type: String, default:"#ffffff", validate: [colorValidator, 'not a valid color']},
-    age:{type: Number, min: 1, max:120},
+    age:{type: Number, default: randomAgeGenerator, min: 1, max:120},
     gender:{type: String, enum: ['male', 'female']},
     login_method: {type: String, enum: ['local', 'facebook'], required: true},
     local: {

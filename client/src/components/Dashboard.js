@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { getVotes } from "../api/poll";
 import { useParams, useNavigate } from 'react-router-dom'
 import Loading from './Loading';
-import ReactApexChart from 'react-apexcharts';
 import { Button } from 'react-bootstrap';
 import { BsArrowLeftSquare } from 'react-icons/bs'
+import GenderChart from './Charts/GenderChart';
+import VotesOverTimeChart from './Charts/VotesOverTimeChart';
+import AgeHistogram from './Charts/AgeHistogram';
 
 
 const Dashboard = () => {
@@ -28,7 +30,7 @@ const Dashboard = () => {
             }
         },
         dataLabels: {
-          enabled: false
+            enabled: false
         },
         markers: {
             size: 0,
@@ -48,14 +50,14 @@ const Dashboard = () => {
             },
         },
         yaxis: {
-          labels: {
-            formatter: function (val) {
-              return (val).toFixed(0);
+            labels: {
+                formatter: function (val) {
+                    return (val).toFixed(0);
+                },
             },
-          },
-          title: {
-            text: 'Votes'
-          },
+            title: {
+                text: 'Votes'
+            },
         },
         xaxis: {
             type: 'datetime',
@@ -86,14 +88,24 @@ const Dashboard = () => {
 
     return (
         <div className='w-75 my-3 mx-auto border border-3 border-secondary rounded'>
-            <Button className="m-3" variant="dark" onClick={() => navigate("/polls/"+params.pollId)}>
-                <BsArrowLeftSquare className='m-2'/>Back to Poll
+            <Button className="m-3" variant="dark" onClick={() => navigate("/polls/" + params.pollId)}>
+                <BsArrowLeftSquare className='m-2' />Back to Poll
             </Button>
 
             {loading && <center><Loading /></center>}
 
             <div className='m-5 p-5 border border-primary rounded'>
-            {series &&<ReactApexChart options={options} series={series} type="area" height={350} />}
+
+
+
+                {series && <>
+                    <AgeHistogram />
+                    <hr/>
+                    <GenderChart />
+                    <hr/>
+                    <VotesOverTimeChart series={series} />
+
+                </>}
             </div>
         </div>
     );
