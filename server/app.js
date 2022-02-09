@@ -6,6 +6,7 @@ const userRouter = require("./routes/users_routes");
 const pollRouter = require("./routes/poll_routes");
 const voteRouter = require("./routes/vote_routes");
 const passport = require("passport");
+const path = require("path")
 // const mongoose = require("mongoose");
 require('./initDB');
 const Poll = require('./models/poll_schema');
@@ -26,6 +27,16 @@ app.use(
         credentials: true,
     })
 );
+
+// if(process.env.NODE_ENV === 'development') {
+//     console.log("launhing from production")
+//     console.log(path.join(__dirname, '..', 'client' ,'build'))
+//     app.use('/', express.static(path.join(__dirname, '..', 'client' ,'build')))
+//     app.get("/", (req, res) => {
+//         console.log("ok?")
+//         res.sendFile(path.resolve(__dirname, '..', 'client', 'build', 'index.html'));
+//     })
+// }
 
 const DEBUG_FUNC = (req, res, next) => {
     console.log(req);
@@ -178,8 +189,8 @@ app.get('/verify/:code', async (req, res) => {
     res.send("Verified Successfully")
 })
 
-app.listen(5000, () => {
-    console.log("Hemlo to meow app!");
+app.listen(process.env.PORT || 5000, () => {
+    console.log("Listenning to ", process.env.PORT || 5000);
 });
 
 module.exports = app
