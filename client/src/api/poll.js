@@ -130,13 +130,13 @@ export const getUserPolls = (userId) => {
  * @param {string} pollId
  * @returns Array of prefix arrays
  */
-export const getVotes = (pollId) => {
+export const getInsights = (pollId) => {
     var requestOptions = {
         method: 'GET',
         redirect: 'follow'
     };
 
-    return fetch(apiURL + "/polls/"+pollId+"/votes", requestOptions)
+    return fetch(apiURL + "/polls/"+pollId+"/insights", requestOptions)
         .then(response => response.json())
         .catch(error => console.log('error', error));
 }

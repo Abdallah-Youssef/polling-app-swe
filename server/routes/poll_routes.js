@@ -290,8 +290,7 @@ async function getVotesBySex(pollId, choicesLength) {
 }
 
 /**
- * Return the prefix sum of the votes
- * Requestor must be the author
+ * Returns poll analytics 
  */
 pollRouter.get('/:pollId/insights', verifyAuthor, async (req, res) =>{
     const poll = await Poll.findOne({_id: req.params.pollId})
@@ -318,7 +317,8 @@ pollRouter.get('/:pollId/insights', verifyAuthor, async (req, res) =>{
     const [ageVotes_, genderVotes_] = await Promise.all([ageVotes, genderVotes])
 
     res.json({
-        series: prefixes.map((prefix, i) => ({name: poll.choices[i], data: prefix})),
+        options: poll.choices,
+        voteHistory: prefixes.map((prefix, i) => ({name: poll.choices[i], data: prefix})),
         age: ageVotes_, 
         gender: genderVotes_
     })
