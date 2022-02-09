@@ -116,7 +116,9 @@ userRouter.get('/:userId', async (req, res) => {
             email: user.local.email,
             display_name: user.display_name,
             bio: user.bio,
-            color: user.color
+            color: user.color,
+            age: user.age,
+            gender: user.gender
         })
     }
     catch(err){
@@ -134,16 +136,18 @@ userRouter.get('/:userId', async (req, res) => {
  * @apiBody [{String}] [display_name] Display name
  * @apiBody [{String}] [bio] User's bio
  * @apiBody [{String}] [color] User's profile color
+ * @apiBody [{Number}] [age] User's age
+ * @apiBody [{String="male","female"}] [gender] User's profile color
  * 
  */
 userRouter.post('/updateinfo', async (req, res) => {
-    const allowedKeys = ["display_name", "bio", "color"]
+    const allowedKeys = ["display_name", "bio", "color", "age", "gender"]
 
     let id = req.user.id
     const user = await User.findById(id);
 
     allowedKeys.forEach(key => {
-        if (req.body[key] && typeof req.body[key] === 'string')
+        if (req.body[key])
             user[key] = req.body[key]
     })
 
@@ -153,10 +157,12 @@ userRouter.post('/updateinfo', async (req, res) => {
             email: user.local.email,
             display_name: user.display_name,
             bio: user.bio,
-            color: user.color
+            color: user.color,
+            age: user.age,
+            gender: user.gender
         })
     } catch (e) {
-        res.json({ error: "Invalid color value" })
+        res.json({ error: "Invalid value(s)" })
     }
 });
 

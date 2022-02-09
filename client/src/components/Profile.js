@@ -23,7 +23,6 @@ const Profile = () => {
 
 
         const userId = params.userId
-        console.log({userId, user})
 
 
         const pollsPromise = getUserPolls(userId)
@@ -46,11 +45,10 @@ const Profile = () => {
     const handleEditClicked = () => setEditing(true)
 
   
-    const onSubmit = async (displayName, bio, color) => {
+    const onSubmit = async (displayName, bio, color, age, gender) => {
         setEditing(false)
-        updateUserInfo(displayName, bio, color)
+        updateUserInfo(displayName, bio, color, age, gender)
         .then(res => {
-            console.log(res)
             if (!res.error){
                 setError("")
                 setUserInfo(res)

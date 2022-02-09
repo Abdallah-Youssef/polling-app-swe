@@ -12,6 +12,11 @@ const mockUserInfo = {
     email: "e@mail.com"
 }
 
+const newUserInfo = {
+    newBio : "New Bio",
+    newAge : 100
+}
+
 const mockVisitorId = "456"
 
 jest.mock('react-router-dom', () => ({
@@ -28,7 +33,14 @@ const fetchMock = jest.fn((url, req) => {
     if (url === apiURL + "/user/"+mockUserId)
         return Promise.resolve({
             json: () => Promise.resolve(mockUserInfo)
-        })    
+        })
+
+    if (url === apiURL + "/user/updateInfo")
+        return Promise.resolve({
+            json: () => Promise.resolve({})
+        })
+
+
 })
 
 describe("Profile", () => {
@@ -36,6 +48,10 @@ describe("Profile", () => {
 
     beforeAll(() => {
         global.fetch = fetchMock
+    })
+
+    beforeEach(() => {
+        global.fetch.mockClear()
     })
 
     afterAll(() => {
@@ -61,6 +77,40 @@ describe("Profile", () => {
         
         const editButton = await screen.queryByRole("button")
         expect(editButton).toBeInTheDocument()
+    });
+
+    test("Submits New data", async () => {
+        setMockUserId(mockUserId)
+
+        await act( async () => render(<Enviroment element={<Profile/>} />));
+        
+        const editButton = await screen.queryByRole("button")
+        fireEvent.click(editButton)
+
+        // Expect the form to show
+        const bioInput = await screen.findByLabelText("Bio")
+        const ageInput = await screen.findByLabelText("Age")
+        const genderInput = await screen.findByLabelText("Gender")
+        const submitButton = await screen.queryByRole("button")
+
+        expect(bioInput).toBeInTheDocument()
+        expect(ageInput).toBeInTheDocument()
+        expect(genderInput).toBeInTheDocument()
+
+
+
+
+        fireEvent.change(bioInput, { target: { value: newUserInfo.newBio } });
+        fireEvent.change(ageInput, { target: { value: newUserInfo.newAge } });
+        global.fetch.mockClear()
+        fireEvent.click(submitButton)
+
+        expect(fetchMock.mock.calls[0][0]).toEqual("http://localhost:5000/user/updateinfo")
+
+        const reqBody = JSON.parse(fetchMock.mock.calls[0][1].body)
+        expect(reqBody.bio).toEqual(newUserInfo.newBio)
+        expect(parseInt(reqBody.age)).toEqual(newUserInfo.newAge)
+
     });
 })
 
