@@ -30,6 +30,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           
           <Route path="/pollFeed" element={<HomePage/>} />
+          <Route path="/" element={<HomePage/>} />
 
           <Route
             path="*"

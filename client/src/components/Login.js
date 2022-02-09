@@ -20,7 +20,7 @@ const Login = () => {
             await handleLogIn(email, password)(dispatch);
 
             // Go back to the page you were at before login
-            navigate(location.state ? location.state.from : '/pollFeed')
+            navigate(location.state ? location.state.from : '/')
         } catch (error) {
             alert(error);
         }
