@@ -20,6 +20,10 @@ const PollSchema = new Schema({
         type: Boolean, 
         default: true
     },
+    closed: {
+        type: Boolean,
+        default: false
+    },
     choices: {
         type: [String],
         validate: {

@@ -250,6 +250,7 @@ describe('Queries on Polls', () => {
 
 })
 
+
 describe('Queries on Users', () => {
     describe('Update user info', () => {
         it ('Ignores unallowed attributes, and updates correct attributes', (done) => {
@@ -316,4 +317,105 @@ describe('Queries on Users', () => {
             });
         })
     })
+})
+
+describe('Closing Poll', () => {
+    let pollId
+
+    before(async () => {
+        // Adel posts a poll
+        const pollData = {
+            postedBy: adel.id ,
+            createdOn: new Date().getTime(),
+            question: "Poll Question",
+            public: true,
+            choices: ["Choice 1", "Choice 2"]
+        };
+
+        const newPost = new Poll(pollData);
+        await newPost.save();
+        pollId = newPost._id
+    })
+
+    it('Prevents non author from closing', (done) => {
+        chai.request(app)
+            .get('/polls/'+pollId+"/close")
+            .set('content-type', 'application/json')
+            .set('Authorization', mohamed.token) // Mohamed tries to close adel's poll
+            .end(async (err, res) => {
+                assert(res.body.error)
+                done();
+            });
+    })
+
+    it('Closes correctly', (done) => {
+        chai.request(app)
+            .get('/polls/'+pollId+"/close")
+            .set('content-type', 'application/json')
+            .set('Authorization', adel.token) // Adel tries to close his poll
+            .end(async (err, res) => {
+                assert(res.text === "poll closed")
+
+                const poll = await Poll.findById(pollId)
+                assert(poll.closed)
+                done();
+            });
+    })
+
+    it('Handles Redundant close', (done) => {
+        chai.request(app)
+            .get('/polls/'+pollId+"/close")
+            .set('content-type', 'application/json')
+            .set('Authorization', adel.token) 
+            .end(async (err, res) => {
+                assert(res.text === "poll closed")
+
+                const poll = await Poll.findById(pollId)
+                assert(poll.closed)
+                done();
+            });
+    })
+
+    it('Rejects Submit after closing', (done) => {
+        chai.request(app)
+            .post('/votes/submit')
+            .set('content-type', 'application/json')
+            .set('Authorization', adel.token) 
+            .send({
+                poll: pollId,
+                choice: 0
+            })
+            .end(async (err, res) => {
+                assert(res.body.error === "poll closed")
+
+                const poll = await Poll.findById(pollId)
+                // Make sure no votes are recorded
+                const {choices} = await poll.getResultSummary()
+                assert(choices[0].count === 0)
+                assert(choices[1].count === 0)
+                done();
+            });
+    })
+
+    it('Rejects Changing vote after closing', (done) => {
+        chai.request(app)
+            .post('/votes/change')
+            .set('content-type', 'application/json')
+            .set('Authorization', adel.token) 
+            .send({
+                poll: pollId,
+                choice: 0
+            })
+            .end(async (err, res) => {
+                assert(res.body.error === "poll closed")
+                
+                const poll = await Poll.findById(pollId)
+                // Make sure no votes are recorded
+                const {choices} = await poll.getResultSummary()
+                assert(choices[0].count === 0)
+                assert(choices[1].count === 0)
+                done();
+            });
+    })
+
 })

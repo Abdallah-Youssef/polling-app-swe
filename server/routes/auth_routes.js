@@ -37,7 +37,7 @@ function sendTokenandUser(req, res) {
         maxAge: 86400000
     });
 
-    console.log(req.user);
+    // console.log(req.user);
 
     let user = {
         id: req.user.id

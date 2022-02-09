@@ -140,3 +140,15 @@ export const getVotes = (pollId) => {
         .then(response => response.json())
         .catch(error => console.log('error', error));
 }
+
+export const closePoll = (pollId) => {
+    var requestOptions = {
+        method: 'GET',
+    };
+    
+    return fetch(apiURL + "/polls/"+pollId+"/close", requestOptions)
+        .then(response => {
+            return response.text()
+        })
+        .catch(error => console.log('error', error));
+}

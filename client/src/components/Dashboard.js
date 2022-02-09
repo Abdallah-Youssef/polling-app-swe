@@ -65,7 +65,7 @@ const Dashboard = () => {
 
 
     useEffect(() => {
-        const fetchPoll = async () => {
+        const fetchVotes = async () => {
             const res = await getVotes(params.pollId);
 
             if (res.error) {
@@ -77,7 +77,7 @@ const Dashboard = () => {
             setLoading(false)
         }
 
-        fetchPoll()
+        fetchVotes()
     }, [params.pollId, navigate]);
 
 
