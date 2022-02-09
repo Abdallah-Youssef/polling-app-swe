@@ -5,6 +5,7 @@ const User = require('../models/user_schema')
 const Vote = require('../models/vote_schema');
 const { photoUpload } = require('../initDB');
 const { downloadPhoto } = require('../utils');
+const mongoose = require('mongoose');
 
 
 const DEBUG_FUNC = (req, res, next) => {
@@ -181,6 +182,113 @@ pollRouter.get('/:pollId/vote/:userId', async (req, res) => {
     res.send(vote.choice);
 });
 
+
+async function getVotesByAge(pollId) {
+    console.log(1)
+    // setTimeout(1000, ()=>{})
+    let pollVotes = await Vote.aggregate([
+        {
+          '$match': {
+            'poll': mongoose.Types.ObjectId(pollId)
+          }
+        }, {
+          '$lookup': {
+            'from': 'users', 
+            'localField': 'user', 
+            'foreignField': '_id', 
+            'as': 'user'
+          }
+        }, {
+          '$unwind': {
+            'path': '$user'
+          }
+        }, {
+          '$project': {
+            '_id': 1, 
+            'user.age': 1
+          }
+        }, {
+          '$bucket': {
+            'groupBy': '$user.age', 
+            'boundaries': [
+              0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120
+            ], 
+            'default': 'Unknown', 
+            'output': {
+              'count': {
+                '$sum': 1
+              }
+            }
+          }
+        }
+      ])
+      console.log(1.5)
+    console.log("nallVoteShit->", pollVotes)
+
+    let ageVotes = new Array(13);
+    for(let vote of pollVotes) {
+        if(vote._id != 'Unkown'){
+            ageVotes[vote._id/10] = vote.count;
+        }
+    }
+    console.log("ageVOtes:",ageVotes)
+
+    return ageVotes;
+}
+
+async function getVotesBySex(pollId, choicesLength) {
+    console.log(3)
+    let pollVotes = await Vote.aggregate([{
+        '$match': {
+          'poll': mongoose.Types.ObjectId(pollId)
+        }
+      }, {
+        '$lookup': {
+          'from': 'users', 
+          'localField': 'user', 
+          'foreignField': '_id', 
+          'as': 'user'
+        }
+      }, {
+        '$unwind': {
+          'path': '$user'
+        }
+      },
+
+      {
+        '$project': {
+          '_id': 1, 
+          'user.gender': 1,
+          'choice': 1,
+        }
+      }, {
+        '$group': {
+          "_id": {
+              "choice": "$choice",
+              "gender": "$user.gender"
+          },
+          "count": { "$sum": 1 }
+        }
+      }])
+      console.log(3.5)
+
+    console.log("male votes", pollVotes)
+    console.log(choicesLength)
+    let genderVotes = [{name: 'Male', data: new Array(choicesLength).fill(0) },
+    {name:'Female', data: new Array(choicesLength).fill(0)}, {name:'Unkown', data: new Array(choicesLength).fill(0)}]
+    for(let vote of pollVotes) {
+        if(vote._id.gender == 'male'){
+            genderVotes[0].data[vote._id.choice] = vote.count
+        } else if(vote._id.gender == 'female'){
+            genderVotes[1].data[vote._id.choice] = vote.count
+        } else {
+            genderVotes[2].data[vote._id.choice] = vote.count
+        }
+    }
+    console.log("gender votes:", genderVotes);
+    return genderVotes
+}
+
 /**
  * Return the prefix sum of the votes
  * Requestor must be the author
@@ -204,10 +312,15 @@ pollRouter.get('/:pollId/votes', verifyAuthor, async (req, res) =>{
         counters[choice]++
         prefixes[choice].push({x: votes[i].updatedAt.getTime(), y: counters[choice]})
     }
-
+    
+    let ageVotes = getVotesByAge(req.params.pollId)
+    let genderVotes = getVotesBySex(req.params.pollId, poll.choices.length)
+    const [ageVotes_, genderVotes_] = await Promise.all([ageVotes, genderVotes])
 
     res.json({
-        series: prefixes.map((prefix, i) => ({name: poll.choices[i], data: prefix}))
+        series: prefixes.map((prefix, i) => ({name: poll.choices[i], data: prefix})),
+        age: ageVotes_, 
+        gender: genderVotes_
     })
 })
   
