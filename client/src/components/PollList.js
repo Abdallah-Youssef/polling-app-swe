@@ -6,7 +6,7 @@ const PollList = ({ polls }) => {
 
 
     return (
-        <Container className="w-50 mt-5">
+        <Container className="w-50 my-3">
             <ListGroup as="ul" numbered>
                 {polls.map((poll, i) => (
                     <ListGroup.Item

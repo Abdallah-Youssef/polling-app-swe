@@ -45,7 +45,7 @@ Object.assign(navigator, {
 // Mock user store and reducer
 export let mockUserState = {}
 export const mockUserDispatch = (action) => mockUserState = userReducer(mockUserState, action)
-
+export const setMockUserId = (id) => mockUserState.id = id
 export const Enviroment = ({ element }) => {
     return (
         <BrowserRouter>

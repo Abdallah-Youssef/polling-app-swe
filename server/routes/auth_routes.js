@@ -10,6 +10,7 @@ const config = require('config')
 const VerificationLink = require('../models/verification_link_schema')
 const crypto = require('crypto') // generates random string
 
+
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
@@ -59,10 +60,9 @@ async function sendVerificationEmail(email, verificationLink){
     <b>Welcome to our website</b>
     Visit this link to verify your account : ${verificationLink}
     `
-
     if (process.env.NODE_ENV === 'test')
         return
-
+        
     transporter.sendMail({
         from: `"Polling Website" <${config.get("mailUserName")}>`, // sender address
         to: email, // list of receivers

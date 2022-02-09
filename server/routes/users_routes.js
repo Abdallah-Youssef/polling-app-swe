@@ -6,42 +6,37 @@ const User = require('../models/user_schema');
 const bcrypt = require('bcryptjs');
 const Poll = require('../models/poll_schema');
 
+
 userRouter.post('/changePassword', async (req, res) => {
-    try
-    {
-        const {oldPassword, newPassword, confirmPassword} = req.body;
+    try {
+        const { oldPassword, newPassword, confirmPassword } = req.body;
         const user = req.user;
 
-        if(user.login_method !== 'local')
+        if (user.login_method !== 'local')
             return res.send('fail');
         const isMatch = await user.validatePassword(oldPassword);
-        if(isMatch)
-        {
-            if(newPassword === confirmPassword)
-            {
+        if (isMatch) {
+            if (newPassword === confirmPassword) {
                 const salt = await bcrypt.genSalt(10);
-                const hash = await bcrypt.hash(newPassword, salt);    
-                await User.findByIdAndUpdate(user.id, {$set: {'local.password': hash}});
+                const hash = await bcrypt.hash(newPassword, salt);
+                await User.findByIdAndUpdate(user.id, { $set: { 'local.password': hash } });
                 return res.send('update successful');
             }
             return res.send('passwords dont match');
         }
         res.send('enter password correctly');
-    }catch(error)
-    {
+    } catch (error) {
         res.send(error);
         //res.send('an error occured');
     }
 });
 
 userRouter.post('/updateDisplayName', async (req, res) => {
-    try
-    {
+    try {
         const user = req.user;
-        await User.findByIdAndUpdate(user.id, {$set: {display_name: req.body.display_name}});
+        await User.findByIdAndUpdate(user.id, { $set: { display_name: req.body.display_name } });
         res.send('display_name updated successfully to ' + req.body.display_name);
-    }catch(error)
-    {
+    } catch (error) {
         res.send('an error occured');
     }
 });
@@ -82,17 +77,17 @@ userRouter.get('/polls/:userId', async (req, res) => {
         requested_user = req.params.userId;
     else
         requested_user = requesting_user;
-        
-    let filter = {postedBy: requested_user};
 
-    if (requesting_user != requested_user){
+    let filter = { postedBy: requested_user };
+
+    if (requesting_user != requested_user) {
         filter['public'] = true;
         console.log("The requester is not the creator");
     }
     //console.log(id)
 
     const polls = await Poll.find(filter)
-    .populate('postedBy',{_id:1, display_name: 1, 'local.email': 1});;
+        .populate('postedBy', { _id: 1, display_name: 1, 'local.email': 1 });;
     console.log(polls)
     res.send(polls.reverse())
 });
@@ -108,20 +103,62 @@ userRouter.get('/polls/:userId', async (req, res) => {
  * 
  * @apiSuccess {String} email User's email
  * @apiSuccess {String} [display_name] User's display_name
- * 
+ * @apiSuccess {String} [bio] User's bio
+ * @apiSuccess {String} [color] User's profile color
  * @apiParamExample Request-Example:
  * user/61c212e078743f401426e042
  */
- userRouter.get('/:userId', async (req, res) => {
+userRouter.get('/:userId', async (req, res) => {
     let id = req.params.userId;
-    const user = await User.findById(id);
+    try{
+        const user = await User.findById(id);
+        res.send({
+            email: user.local.email,
+            display_name: user.display_name,
+            bio: user.bio,
+            color: user.color
+        })
+    }
+    catch(err){
+        res.send({error: "user not found"})
+    }
 
-    res.send({
-        email: user.local.email,
-        display_name: user.display_name
-    })
+ 
 });
 
+/**
+ * @api {post} /user/updateinfo Update user info
+ * @apiName Update The requesting User's Info
+ * @apiGroup User
+ *
+ * @apiBody [{String}] [display_name] Display name
+ * @apiBody [{String}] [bio] User's bio
+ * @apiBody [{String}] [color] User's profile color
+ * 
+ */
+userRouter.post('/updateinfo', async (req, res) => {
+    const allowedKeys = ["display_name", "bio", "color"]
+
+    let id = req.user.id
+    const user = await User.findById(id);
+
+    allowedKeys.forEach(key => {
+        if (req.body[key] && typeof req.body[key] === 'string')
+            user[key] = req.body[key]
+    })
+
+    try {
+        await user.save();
+        res.send({
+            email: user.local.email,
+            display_name: user.display_name,
+            bio: user.bio,
+            color: user.color
+        })
+    } catch (e) {
+        res.json({ error: "Invalid color value" })
+    }
+});
 
 
 module.exports = userRouter;
