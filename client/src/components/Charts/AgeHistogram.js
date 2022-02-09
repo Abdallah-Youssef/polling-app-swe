@@ -3,15 +3,14 @@ import ReactApexChart from 'react-apexcharts';
 
 const AgeHistogram = ({series}) => {
     const ageIncrements = Array.from({length: 12}, (_, i) => (i + 1)*10)
-    const randomAgeData = Array.from({length: 12}, () => Math.floor(Math.random() * 40));
 
     const getPercentages = (array) => {
-        const sum = array.reduce((partialSum, a) => partialSum + a, 0);
-        return array.map(x => (x / sum * 100).toFixed(2))
+        const sum = array.reduce((partialSum, a) => partialSum + a??0, 0);
+        return array.map(x => ((x??0) / sum * 100).toFixed(2))
     }
 
     const mockAgeData = [{
-        data: getPercentages(randomAgeData)
+        data: (getPercentages(series))
     }]
 
     const options = {
