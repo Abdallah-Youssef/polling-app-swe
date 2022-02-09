@@ -17,7 +17,18 @@ html, .App{
     height: 100%;
 }
 
-
 #poll-info button {
   margin: 10px;
+}
+
+.list-group-item {
+  margin: 10px;  
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 20%);
+  transition: background-color 2s ease-out 100ms
+}
+
+.list-group-item:hover {
+  cursor: pointer;
+  background-color: #14ffe0;
 }

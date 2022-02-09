@@ -293,7 +293,7 @@ async function getVotesBySex(pollId, choicesLength) {
  * Return the prefix sum of the votes
  * Requestor must be the author
  */
-pollRouter.get('/:pollId/votes', verifyAuthor, async (req, res) =>{
+pollRouter.get('/:pollId/insights', verifyAuthor, async (req, res) =>{
     const poll = await Poll.findOne({_id: req.params.pollId})
     const votes = await Vote.find({poll: req.params.pollId})
     votes.sort((a, b) => a.updatedAt - b.updatedAt)

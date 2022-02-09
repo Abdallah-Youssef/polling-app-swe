@@ -3,8 +3,6 @@ import { ListGroup, Container } from "react-bootstrap";
 
 const PollList = ({ polls }) => {
 
-
-
     return (
         <Container className="w-50 my-3">
             <ListGroup as="ul" numbered>
